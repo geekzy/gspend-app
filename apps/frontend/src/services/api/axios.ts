@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useNotificationStore } from '@/stores/notification'
 
 const API_AUTH_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost/api/v1/auth'
 const API_FINANCE_URL = import.meta.env.VITE_FINANCIAL_SERVICE_URL || 'http://localhost/api/v1'
@@ -31,11 +32,24 @@ financeApi.interceptors.request.use(addAuthToken)
 
 // Add a response interceptor to handle errors
 const handleError = (error: any) => {
-    if (error.response && error.response.status === 401) {
-        // Handle unauthorized error (e.g., redirect to login)
-        localStorage.removeItem('auth_token')
-        window.location.href = '/login'
+    const notificationStore = useNotificationStore()
+
+    if (error.response) {
+        if (error.response.status === 401) {
+            // Only redirect if not already on login/register pages
+            if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+                localStorage.removeItem('auth_token')
+                window.location.href = '/login'
+            }
+        } else {
+            // Show toast for other errors
+            const message = error.response.data?.message || 'An unexpected error occurred'
+            notificationStore.error(message)
+        }
+    } else {
+        notificationStore.error('Network error or server unreachable')
     }
+
     return Promise.reject(error)
 }
 
