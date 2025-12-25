@@ -6,9 +6,13 @@ import (
 	"net/http"
 
 	"github.com/imam/gspend-app/apps/auth-service/internal/config"
+	"github.com/imam/gspend-app/apps/auth-service/internal/handler"
+	"github.com/imam/gspend-app/apps/auth-service/internal/middleware"
+	"github.com/imam/gspend-app/apps/auth-service/internal/repository"
+	"github.com/imam/gspend-app/apps/auth-service/internal/service"
 	"github.com/imam/gspend-app/apps/auth-service/pkg/database"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -34,22 +38,35 @@ func main() {
 	defer redisClient.Close()
 	fmt.Println("Connected to Redis!")
 
+	// Initialize Repository
+	userRepo := repository.NewMongoUserRepository(mongoClient.Database(cfg.MongoDatabase))
+
+	// Initialize Service
+	authService := service.NewAuthService(userRepo, &cfg)
+
+	// Initialize Handler
+	authHandler := handler.NewAuthHandler(authService)
+
 	// Initialize Echo
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(echomiddleware.Logger())
+	e.Use(echomiddleware.Recover())
+	e.Use(echomiddleware.CORS())
 
-	// Health Check
-	e.GET("/api/v1/auth/health", func(c echo.Context) error {
+	// Routes
+	v1 := e.Group("/api/v1/auth")
+	v1.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status":  "ok",
 			"service": "auth-service",
 			"env":     cfg.AppEnv,
 		})
 	})
+	v1.POST("/register", authHandler.Register)
+	v1.POST("/login", authHandler.Login)
+	v1.GET("/me", authHandler.GetProfile, middleware.AuthMiddleware(&cfg))
 
 	// Start Server
 	fmt.Printf("Auth Service starting on port %s...\n", cfg.Port)
