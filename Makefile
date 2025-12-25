@@ -26,6 +26,19 @@ test-finance-v:
 	@echo "Running Financial Service tests (verbose)..."
 	@cd apps/financial-service && go test -v ./...
 
+.PHONY: test-coverage
+test-coverage: test-auth-coverage test-finance-coverage
+
+.PHONY: test-auth-coverage
+test-auth-coverage:
+	@echo "Running Auth Service tests with coverage..."
+	@cd apps/auth-service && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out
+
+.PHONY: test-finance-coverage
+test-finance-coverage:
+	@echo "Running Financial Service tests with coverage..."
+	@cd apps/financial-service && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out
+
 .PHONY: generate
 generate:
 	$(MAKE) -C proto generate
