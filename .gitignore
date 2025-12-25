@@ -1,0 +1,34 @@
+# IDEs and OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Project specific
+node_modules/
+dist/
+build/
+bin/
+pkg/
+
+# Go
+apps/auth-service/server
+apps/financial-service/server
+*.exe
+*.test
+*.prof
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Docker
+.docker/
+
+# Logs
+*.log
+
+# Dependencies
+vendor/
