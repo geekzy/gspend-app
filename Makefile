@@ -32,12 +32,12 @@ test-coverage: test-auth-coverage test-finance-coverage
 .PHONY: test-auth-coverage
 test-auth-coverage:
 	@echo "Running Auth Service tests with coverage..."
-	@cd apps/auth-service && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out | grep -v "\.pb\.go"
+	@cd apps/auth-service && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out | grep -v "\.pb\.go" | grep -v "total:"
 
 .PHONY: test-finance-coverage
 test-finance-coverage:
 	@echo "Running Financial Service tests with coverage..."
-	@cd apps/financial-service && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out | grep -v "\.pb\.go"
+	@cd apps/financial-service && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out | grep -v "\.pb\.go" | grep -v "total:"
 
 .PHONY: generate
 generate:
