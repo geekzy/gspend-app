@@ -7,11 +7,11 @@ export const useAuthStore = defineStore('auth', () => {
 
     const isAuthenticated = computed(() => !!token.value)
 
-    function login(mockToken: string, mockUser: any) {
-        token.value = mockToken
-        user.value = mockUser
-        localStorage.setItem('auth_token', mockToken)
-        localStorage.setItem('user_profile', JSON.stringify(mockUser))
+    function setSession(newToken: string, newUser: any) {
+        token.value = newToken
+        user.value = newUser
+        localStorage.setItem('auth_token', newToken)
+        localStorage.setItem('user_profile', JSON.stringify(newUser))
     }
 
     function logout() {
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
         token,
         user,
         isAuthenticated,
-        login,
+        setSession,
         logout
     }
 })

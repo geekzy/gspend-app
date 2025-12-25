@@ -37,11 +37,11 @@
         <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
           <div class="flex items-center w-full">
             <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
-              DF
+              {{ userInitials }}
             </div>
             <div class="ml-3 flex-1 overflow-hidden">
-              <p class="text-sm font-semibold text-gray-900 truncate">Demo Family</p>
-              <p class="text-xs text-gray-500 truncate">demo@gspend.app</p>
+              <p class="text-sm font-semibold text-gray-900 truncate">{{ authStore.user?.fullName || 'User' }}</p>
+              <p class="text-xs text-gray-500 truncate">{{ authStore.user?.email || '' }}</p>
             </div>
             <button @click="logout" class="ml-auto p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors">
               <LogOutIcon class="h-5 w-5" />
@@ -90,6 +90,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { 
   LayoutDashboardIcon, 
   WalletIcon, 
@@ -98,8 +99,20 @@ import {
   LogOutIcon 
 } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
+
+const userInitials = computed(() => {
+  if (!authStore.user?.fullName) return 'U'
+  return authStore.user.fullName
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2)
+})
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboardIcon },
@@ -109,8 +122,7 @@ const navigation = [
 ]
 
 const logout = () => {
-  localStorage.removeItem('auth_token')
-  localStorage.removeItem('user_profile')
+  authStore.logout()
   router.push('/login')
 }
 </script>
