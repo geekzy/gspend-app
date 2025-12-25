@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/imam/gspend-app/apps/financial-service/internal/grpc/client"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/grpc/client"
 	"github.com/labstack/echo/v4"
 )
 

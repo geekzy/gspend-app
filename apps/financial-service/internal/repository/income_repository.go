@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/imam/gspend-app/apps/financial-service/internal/domain"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

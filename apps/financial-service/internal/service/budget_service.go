@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/imam/gspend-app/apps/financial-service/internal/domain"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

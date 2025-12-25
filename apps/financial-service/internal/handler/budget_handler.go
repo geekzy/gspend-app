@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/imam/gspend-app/apps/financial-service/internal/domain"
-	"github.com/imam/gspend-app/apps/financial-service/internal/dto"
-	"github.com/imam/gspend-app/apps/financial-service/internal/service"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/domain"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/dto"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/service"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

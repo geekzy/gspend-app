@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/imam/gspend-app/apps/auth-service/internal/config"
-	"github.com/imam/gspend-app/apps/auth-service/internal/util"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/config"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/util"
 	"github.com/labstack/echo/v4"
 )
 

@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 
-	"github.com/imam/gspend-app/apps/auth-service/internal/service"
-	authv1 "github.com/imam/gspend-app/apps/auth-service/pkg/proto/auth/v1"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/service"
+	authv1 "github.com/geekzy/gspend-app/apps/auth-service/pkg/proto/auth/v1"
 )
 
 type AuthGRPCService struct {

@@ -1,4 +1,4 @@
-module github.com/imam/gspend-app/apps/financial-service
+module github.com/geekzy/gspend-app/apps/financial-service
 
 go 1.25.5
 

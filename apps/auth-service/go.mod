@@ -1,4 +1,4 @@
-module github.com/imam/gspend-app/apps/auth-service
+module github.com/geekzy/gspend-app/apps/auth-service
 
 go 1.25.5
 

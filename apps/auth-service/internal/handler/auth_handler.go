@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/imam/gspend-app/apps/auth-service/internal/dto"
-	"github.com/imam/gspend-app/apps/auth-service/internal/service"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/dto"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/service"
 	"github.com/labstack/echo/v4"
 )
 

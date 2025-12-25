@@ -5,10 +5,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/imam/gspend-app/apps/auth-service/internal/config"
-	"github.com/imam/gspend-app/apps/auth-service/internal/domain"
-	"github.com/imam/gspend-app/apps/auth-service/internal/dto"
-	"github.com/imam/gspend-app/apps/auth-service/internal/util"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/config"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/domain"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/dto"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/util"
 )
 
 type AuthService struct {
