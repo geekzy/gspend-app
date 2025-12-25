@@ -52,6 +52,7 @@ To run the entire gSpend stack locally:
 
 ### Useful Makefile Commands
 -   `make test`: Run all backend tests.
+-   `make test-coverage`: Run all backend tests and display code coverage percentages (aims for 80%+ on critical logic).
 -   `make build`: Build backend binaries.
 -   `make docker-down`: Stop and remove containers.
 -   `make generate`: Re-generate gRPC code from proto files.
