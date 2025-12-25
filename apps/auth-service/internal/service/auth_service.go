@@ -88,6 +88,18 @@ func (s *AuthService) GetProfile(ctx context.Context, userID string) (*dto.UserD
 	}, nil
 }
 
+func (s *AuthService) ValidateJWT(token string) (*util.JWTClaims, error) {
+	return util.ValidateToken(token, s.config.JWTSecret)
+}
+
+func (s *AuthService) CheckUserExists(ctx context.Context, userID string) (bool, error) {
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return false, err
+	}
+	return user != nil, nil
+}
+
 func (s *AuthService) generateAuthResponse(user *domain.User) (*dto.AuthResponse, error) {
 	// Generate Access Token
 	accessToken, err := util.GenerateToken(

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/imam/gspend-app/apps/auth-service/internal/config"
+	"github.com/imam/gspend-app/apps/auth-service/internal/grpc"
 	"github.com/imam/gspend-app/apps/auth-service/internal/handler"
 	"github.com/imam/gspend-app/apps/auth-service/internal/middleware"
 	"github.com/imam/gspend-app/apps/auth-service/internal/repository"
@@ -67,6 +68,16 @@ func main() {
 	v1.POST("/register", authHandler.Register)
 	v1.POST("/login", authHandler.Login)
 	v1.GET("/me", authHandler.GetProfile, middleware.AuthMiddleware(&cfg))
+
+	// Start gRPC Server
+	authGRPCService := grpc.NewAuthGRPCService(authService)
+	grpcServer := grpc.NewGRPCServer(authGRPCService, 9091) // Hardcoded 9091 for now, can move to config
+
+	go func() {
+		if err := grpcServer.Start(); err != nil {
+			log.Fatalf("Failed to start gRPC server: %v", err)
+		}
+	}()
 
 	// Start Server
 	fmt.Printf("Auth Service starting on port %s...\n", cfg.Port)

@@ -11,9 +11,10 @@ type Config struct {
 	MongoDatabase  string `mapstructure:"MONGODB_DATABASE"`
 	RedisHost      string `mapstructure:"REDIS_HOST"`
 	RedisPort      string `mapstructure:"REDIS_PORT"`
-	RedisPassword  string `mapstructure:"REDIS_PASSWORD"`
-	JWTSecret      string `mapstructure:"JWT_SECRET"`
-	AuthServiceURL string `mapstructure:"AUTH_SERVICE_URL"`
+	RedisPassword       string `mapstructure:"REDIS_PASSWORD"`
+	JWTSecret           string `mapstructure:"JWT_SECRET"`
+	AuthServiceURL      string `mapstructure:"AUTH_SERVICE_URL"`
+	AuthServiceGRPCAddr string `mapstructure:"AUTH_SERVICE_GRPC_ADDR"`
 }
 
 func LoadConfig() (config Config, err error) {
