@@ -18,6 +18,8 @@ apps/financial-service/server
 *.exe
 *.test
 *.prof
+coverage.out
+*.out
 
 # Environment files
 .env
