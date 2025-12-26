@@ -73,7 +73,7 @@ func main() {
 
 	// Start gRPC Server
 	authGRPCService := grpc.NewAuthGRPCService(authService)
-	grpcServer := grpc.NewGRPCServer(authGRPCService, 9091) // Hardcoded 9091 for now, can move to config
+	grpcServer := grpc.NewGRPCServer(authGRPCService, 9092) // Changed from 9091 to 9092
 
 	go func() {
 		if err := grpcServer.Start(); err != nil {

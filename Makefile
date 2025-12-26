@@ -194,8 +194,16 @@ health-check:
 # =============================================================================
 
 .PHONY: test-integration
-test-integration: docker-up
-	@echo "Running integration tests..."
+test-integration:
+	@echo "Running Docker-based integration tests..."
+	docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
+	docker-compose -f docker-compose.test.yml build
+	docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from test-runner
+	docker-compose -f docker-compose.test.yml down --volumes
+
+.PHONY: test-integration-local
+test-integration-local: docker-up
+	@echo "Running integration tests against local Docker environment..."
 	@sleep 15  # Wait for services to be fully ready
 	@$(MAKE) health-check
 	@echo "Integration tests complete"
@@ -206,6 +214,12 @@ test-e2e: docker-up
 	@sleep 15  # Wait for services to be fully ready
 	# Add e2e test commands here when available
 	@echo "E2E tests complete"
+
+.PHONY: test-clean
+test-clean:
+	@echo "Cleaning up test environment..."
+	docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
+	docker system prune -f --volumes
 
 # =============================================================================
 # Utility Targets

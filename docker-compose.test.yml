@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # Test MongoDB - isolated instance for testing
+  mongodb-test:
+    image: mongo:7.0
+    container_name: gspend-mongodb-test
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: gspend_test
+    volumes:
+      - mongodb_test_data:/data/db
+    networks:
+      - gspend-test-network
+
+  # Test Redis - isolated instance for testing
+  redis-test:
+    image: redis:7.2-alpine
+    container_name: gspend-redis-test
+    ports:
+      - "6380:6379"
+    networks:
+      - gspend-test-network
+
+  # Auth Service for testing
+  auth-service-test:
+    build:
+      context: ./apps/auth-service
+      dockerfile: Dockerfile
+    container_name: gspend-auth-test
+    ports:
+      - "8083:8081"
+    environment:
+      - PORT=8081
+      - APP_ENV=test
+      - MONGODB_URI=mongodb://mongodb-test:27017
+      - MONGODB_DATABASE=gspend_test
+      - REDIS_HOST=redis-test
+      - REDIS_PORT=6379
+      - JWT_SECRET=test-jwt-secret-key-for-testing-only
+      - REFRESH_SECRET=test-refresh-secret-key-for-testing-only
+    depends_on:
+      - mongodb-test
+      - redis-test
+    networks:
+      - gspend-test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/api/v1/auth/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Financial Service for testing
+  financial-service-test:
+    build:
+      context: ./apps/financial-service
+      dockerfile: Dockerfile
+    container_name: gspend-financial-test
+    ports:
+      - "8084:8082"
+    environment:
+      - PORT=8082
+      - APP_ENV=test
+      - MONGODB_URI=mongodb://mongodb-test:27017
+      - MONGODB_DATABASE=gspend_test
+      - REDIS_HOST=redis-test
+      - REDIS_PORT=6379
+      - JWT_SECRET=test-jwt-secret-key-for-testing-only
+      - AUTH_SERVICE_URL=http://auth-service-test:8081
+      - AUTH_SERVICE_GRPC_ADDR=auth-service-test:9091
+    depends_on:
+      - mongodb-test
+      - redis-test
+      - auth-service-test
+    networks:
+      - gspend-test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Test runner container
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: gspend-test-runner
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service-test:8081
+      - FINANCIAL_SERVICE_URL=http://financial-service-test:8082
+      - MONGODB_URI=mongodb://mongodb-test:27017
+      - MONGODB_DATABASE=gspend_test
+    depends_on:
+      auth-service-test:
+        condition: service_healthy
+      financial-service-test:
+        condition: service_healthy
+    networks:
+      - gspend-test-network
+    volumes:
+      - ./test-results:/app/test-results
+
+volumes:
+  mongodb_test_data:
+
+networks:
+  gspend-test-network:
+    driver: bridge

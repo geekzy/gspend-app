@@ -1,48 +1,74 @@
 # gSpend Testing Guide
 
-This guide explains how to run functional tests for the gSpend application.
+This guide explains how to run tests for the gSpend application using Docker containers for CI/CD compatibility.
+
+## Testing Strategy
+
+We use a **multi-layered testing approach**:
+
+1. **Unit Tests** - Fast, isolated tests for individual components
+2. **Integration Tests** - Docker-based tests for complete backend workflows  
+3. **End-to-End Tests** - Full application testing (future)
 
 ## Quick Start
 
-1. **Verify Prerequisites** (handles everything automatically):
+### Unit Tests (Fast)
 ```bash
-./scripts/verify_test_prerequisites.sh
+# Run all unit tests
+make test
+
+# Run with verbose output
+make test-v
+
+# Run with coverage
+make test-coverage
 ```
 
-2. **Run Tests**:
+### Integration Tests (Docker-based)
 ```bash
-# Profile management tests
-cd apps/auth-service && ./test_profile_endpoints.sh
+# Run complete integration test suite
+make test-integration
 
-# Budget item tests  
-cd apps/financial-service && ./test_budget_items.sh
+# Clean up test environment
+make test-clean
 ```
 
-## What the Prerequisites Script Does
+## Docker-Based Integration Testing
 
-The `verify_test_prerequisites.sh` script automatically:
-- ✅ Checks MongoDB connection
-- ✅ Verifies seeded system categories (auto-seeds if missing)
-- ✅ Creates database indexes (auto-creates if missing)
-- ✅ Validates auth service running
-- ✅ Validates financial service running
-- ✅ Checks required tools (curl, jq, go)
+Our integration tests run in **isolated Docker containers** to ensure:
+- ✅ **Consistent environment** across development and CI/CD
+- ✅ **No local dependencies** (MongoDB, Redis, services)
+- ✅ **Automatic seeding** of test data
+- ✅ **Complete cleanup** after tests
+- ✅ **CI/CD ready** with GitHub Actions
 
-## Starting Services
+### What Gets Tested
 
-If services aren't running, start them:
+**Database Layer:**
+- ✅ MongoDB connection and operations
+- ✅ Seeded categories (30+ family-oriented categories)
+- ✅ Database indexes for performance
 
 **Auth Service:**
-```bash
-cd apps/auth-service && go run cmd/server/main.go
-# Runs on http://localhost:8081
-```
+- ✅ User registration with password validation
+- ✅ Profile management (update, password change)
+- ✅ JWT token generation and validation
+- ✅ Email uniqueness enforcement
 
 **Financial Service:**
-```bash
-cd apps/financial-service && go run cmd/server/main.go
-# Runs on http://localhost:8082
-```
+- ✅ Service health and connectivity
+- ✅ Categories API endpoints
+- ✅ Dashboard API accessibility
+- ✅ Database integration
+
+### Test Environment
+
+The Docker test environment includes:
+- **MongoDB Test Instance** (port 27018)
+- **Redis Test Instance** (port 6380)  
+- **Auth Service** (port 8083)
+- **Financial Service** (port 8084)
+- **Test Runner** with automated test execution
 
 ## Running Tests
 
@@ -184,3 +210,99 @@ After successful testing:
 - ✅ Database is properly seeded
 - ✅ API endpoints are functional
 - ✅ Ready for frontend integration testing
+
+## CI/CD Integration
+
+The Docker-based tests are designed for **GitHub Actions** and other CI/CD systems:
+
+```yaml
+# .github/workflows/ci.yml
+- name: Run Integration Tests
+  run: make test-integration
+```
+
+**Benefits for CI/CD:**
+- ✅ No external dependencies
+- ✅ Consistent test environment  
+- ✅ Automatic cleanup
+- ✅ JSON test reports
+- ✅ Proper exit codes for CI systems
+
+## Legacy Local Testing
+
+For local development, you can still use the original scripts:
+
+```bash
+# Verify local prerequisites
+./scripts/verify_test_prerequisites.sh
+
+# Run local tests (requires manual service startup)
+cd apps/auth-service && ./test_profile_endpoints.sh
+cd apps/financial-service && ./test_budget_items.sh
+```
+
+## Test Output
+
+**Docker Integration Tests:**
+- 🧪 Comprehensive test execution report
+- 📊 JSON test results in `test-results/`
+- ✅ Clear pass/fail indicators
+- 📈 Success rate calculation
+
+**Unit Tests:**
+- 🔍 Individual component testing
+- 📊 Code coverage reports
+- ⚡ Fast execution (< 30 seconds)
+
+## Environment Variables
+
+Customize test behavior:
+
+```bash
+# For Docker tests
+export MONGODB_DATABASE=custom_test_db
+export AUTH_SERVICE_URL=http://custom-auth:8081
+
+# For local tests  
+export MONGODB_URI=mongodb://localhost:27017
+export MONGODB_DATABASE=gspend_test
+```
+
+## Troubleshooting
+
+### Docker Issues
+```bash
+# Clean up test environment
+make test-clean
+
+# Check Docker resources
+docker system df
+docker system prune -f
+```
+
+### Test Failures
+```bash
+# View detailed test results
+cat test-results/integration-test-results.json | jq '.'
+
+# Check container logs
+docker-compose -f docker-compose.test.yml logs test-runner
+```
+
+## Contributing
+
+When adding new tests:
+
+1. **Unit Tests** - Add to existing `*_test.go` files
+2. **Integration Tests** - Extend `scripts/integration-test.sh`
+3. **Docker Tests** - Update `docker-compose.test.yml` if needed
+4. **CI/CD** - Tests run automatically on PR/push
+
+## Next Steps
+
+After successful testing:
+- ✅ All backend services are working
+- ✅ Database is properly seeded  
+- ✅ API endpoints are functional
+- ✅ Ready for frontend integration
+- ✅ CI/CD pipeline validated
