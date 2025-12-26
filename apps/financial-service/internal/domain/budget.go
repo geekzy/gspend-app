@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -46,3 +47,9 @@ type BudgetRepository interface {
 	UpdateSpentAmount(ctx context.Context, budgetID primitive.ObjectID, categoryID primitive.ObjectID, amount float64) error
 	Delete(ctx context.Context, id primitive.ObjectID) error
 }
+
+// Budget errors
+var (
+	ErrBudgetNotFound     = errors.New("budget not found")
+	ErrBudgetItemNotFound = errors.New("budget item not found")
+)
