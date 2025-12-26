@@ -47,6 +47,31 @@ func (m *MockTransactionRepository) Delete(ctx context.Context, id primitive.Obj
 	return args.Error(0)
 }
 
+// Enhanced methods for EnhancedTransactionRepository interface
+func (m *MockTransactionRepository) FindWithFilters(ctx context.Context, userID primitive.ObjectID, filters domain.TransactionFilters) ([]*domain.Transaction, int, error) {
+	args := m.Called(ctx, userID, filters)
+	if args.Get(0) == nil {
+		return nil, args.Int(1), args.Error(2)
+	}
+	return args.Get(0).([]*domain.Transaction), args.Int(1), args.Error(2)
+}
+
+func (m *MockTransactionRepository) GetSpendingByCategory(ctx context.Context, userID primitive.ObjectID, startDate, endDate time.Time) ([]*domain.CategorySpending, error) {
+	args := m.Called(ctx, userID, startDate, endDate)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*domain.CategorySpending), args.Error(1)
+}
+
+func (m *MockTransactionRepository) GetMonthlySpendingTrends(ctx context.Context, userID primitive.ObjectID, months int) ([]*domain.MonthlySpending, error) {
+	args := m.Called(ctx, userID, months)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*domain.MonthlySpending), args.Error(1)
+}
+
 // MockBudgetRepository is a manual mock for domain.BudgetRepository
 type MockBudgetRepository struct {
 	mock.Mock

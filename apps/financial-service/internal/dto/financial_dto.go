@@ -21,6 +21,13 @@ type CreateCategoryRequest struct {
 	SortOrder int    `json:"sortOrder"`
 }
 
+type UpdateCategoryRequest struct {
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	Color     string `json:"color"`
+	SortOrder int    `json:"sortOrder"`
+}
+
 // Income DTOs
 type IncomeResponse struct {
 	ID            string    `json:"id"`
@@ -67,6 +74,13 @@ type CreateBudgetRequest struct {
 }
 
 type CreateBudgetItemRequest struct {
+	CategoryID    string  `json:"categoryId" validate:"required"`
+	CategoryName  string  `json:"categoryName" validate:"required"`
+	PlannedAmount float64 `json:"plannedAmount" validate:"required,gt=0"`
+	Notes         string  `json:"notes"`
+}
+
+type UpdateBudgetItemRequest struct {
 	CategoryID    string  `json:"categoryId" validate:"required"`
 	CategoryName  string  `json:"categoryName" validate:"required"`
 	PlannedAmount float64 `json:"plannedAmount" validate:"required,gt=0"`

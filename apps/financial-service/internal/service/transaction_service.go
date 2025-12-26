@@ -2,17 +2,19 @@ package service
 
 import (
 	"context"
+	"math"
+	"time"
 
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TransactionService struct {
-	transactionRepo domain.TransactionRepository
+	transactionRepo domain.EnhancedTransactionRepository
 	budgetRepo      domain.BudgetRepository
 }
 
-func NewTransactionService(transactionRepo domain.TransactionRepository, budgetRepo domain.BudgetRepository) *TransactionService {
+func NewTransactionService(transactionRepo domain.EnhancedTransactionRepository, budgetRepo domain.BudgetRepository) *TransactionService {
 	return &TransactionService{
 		transactionRepo: transactionRepo,
 		budgetRepo:      budgetRepo,
@@ -78,4 +80,56 @@ func (s *TransactionService) DeleteTransaction(ctx context.Context, id string) e
 	}
 
 	return nil
+}
+func (s *TransactionService) ListUserTransactionsWithFilters(ctx context.Context, userID string, filters domain.TransactionFilters) (*domain.PaginatedTransactions, error) {
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions, total, err := s.transactionRepo.FindWithFilters(ctx, userObjectID, filters)
+	if err != nil {
+		return nil, err
+	}
+
+	// Calculate pagination
+	page := filters.Page
+	if page < 1 {
+		page = 1
+	}
+	perPage := filters.PerPage
+	if perPage < 1 {
+		perPage = 20
+	}
+	
+	totalPages := int(math.Ceil(float64(total) / float64(perPage)))
+
+	return &domain.PaginatedTransactions{
+		Transactions: transactions,
+		Pagination: domain.Pagination{
+			Page:       page,
+			PerPage:    perPage,
+			Total:      total,
+			TotalPages: totalPages,
+		},
+		FiltersApplied: filters,
+	}, nil
+}
+
+func (s *TransactionService) GetSpendingByCategory(ctx context.Context, userID string, startDate, endDate time.Time) ([]*domain.CategorySpending, error) {
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.transactionRepo.GetSpendingByCategory(ctx, userObjectID, startDate, endDate)
+}
+
+func (s *TransactionService) GetMonthlySpendingTrends(ctx context.Context, userID string, months int) ([]*domain.MonthlySpending, error) {
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.transactionRepo.GetMonthlySpendingTrends(ctx, userObjectID, months)
 }
