@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	authv1 "github.com/geekzy/gspend-app/apps/financial-service/pkg/proto/auth/v1"
+	authv1 "github.com/geekzy/gspend-app/apps/financial-service/internal/proto/auth/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	authv1 "github.com/geekzy/gspend-app/apps/auth-service/pkg/proto/auth/v1"
+	authv1 "github.com/geekzy/gspend-app/apps/auth-service/internal/proto/auth/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

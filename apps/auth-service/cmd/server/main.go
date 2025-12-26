@@ -11,7 +11,7 @@ import (
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/middleware"
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/repository"
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/service"
-	"github.com/geekzy/gspend-app/apps/auth-service/pkg/database"
+	"github.com/geekzy/gspend-app/apps/auth-service/internal/database"
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 )

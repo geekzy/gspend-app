@@ -12,7 +12,7 @@ import (
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/middleware"
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/repository"
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/service"
-	"github.com/geekzy/gspend-app/apps/financial-service/pkg/database"
+	"github.com/geekzy/gspend-app/apps/financial-service/internal/database"
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 )

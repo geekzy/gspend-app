@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/service"
-	authv1 "github.com/geekzy/gspend-app/apps/auth-service/pkg/proto/auth/v1"
+	authv1 "github.com/geekzy/gspend-app/apps/auth-service/internal/proto/auth/v1"
 )
 
 type AuthGRPCService struct {
