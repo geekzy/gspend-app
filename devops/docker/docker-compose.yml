@@ -20,6 +20,8 @@ services:
     build:
       context: ../../apps/auth-service
       dockerfile: Dockerfile
+    ports:
+      - "9091:9091"  # Expose gRPC port for inter-service communication
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
       - MONGODB_DATABASE=gspend
@@ -28,6 +30,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-gspend-secret-key}
       - APP_ENV=development
       - PORT=8081
+      - GRPC_PORT=9091
     depends_on:
       mongodb:
         condition: service_healthy
@@ -48,6 +51,8 @@ services:
     build:
       context: ../../apps/financial-service
       dockerfile: Dockerfile
+    ports:
+      - "8082:8082"  # Expose port for direct access during development
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
       - MONGODB_DATABASE=gspend

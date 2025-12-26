@@ -208,7 +208,6 @@ import {
   CalendarIcon, 
   PieChartIcon, 
   MoreVerticalIcon, 
-  PlusIcon,
   XIcon,
   InfoIcon,
   XCircleIcon

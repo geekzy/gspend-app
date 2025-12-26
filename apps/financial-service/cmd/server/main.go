@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -58,18 +59,32 @@ func main() {
 	incomeRepo := repository.NewMongoIncomeRepository(db)
 	budgetRepo := repository.NewMongoBudgetRepository(db)
 	transactionRepo := repository.NewMongoTransactionRepository(db)
+	dashboardRepo := repository.NewMongoDashboardRepository(db)
+	reportRepo := repository.NewMongoReportRepository(db)
 
 	// Initialize Services
 	categorySvc := service.NewCategoryService(categoryRepo)
 	incomeSvc := service.NewIncomeService(incomeRepo)
 	budgetSvc := service.NewBudgetService(budgetRepo)
 	transactionSvc := service.NewTransactionService(transactionRepo, budgetRepo)
+	dashboardSvc := service.NewDashboardService(dashboardRepo)
+	reportSvc := service.NewReportService(reportRepo, transactionRepo, budgetRepo)
+
+	// Initialize system categories on startup
+	fmt.Println("Initializing system categories...")
+	if err := categorySvc.InitializeSystemCategories(context.Background()); err != nil {
+		log.Printf("Warning: Failed to initialize system categories: %v", err)
+	} else {
+		fmt.Println("✓ System categories initialized successfully")
+	}
 
 	// Initialize Handlers
 	categoryHandler := handler.NewCategoryHandler(categorySvc)
 	incomeHandler := handler.NewIncomeHandler(incomeSvc)
 	budgetHandler := handler.NewBudgetHandler(budgetSvc)
 	transactionHandler := handler.NewTransactionHandler(transactionSvc)
+	dashboardHandler := handler.NewDashboardHandler(dashboardSvc)
+	reportHandler := handler.NewReportHandler(reportSvc)
 
 	// Initialize Echo
 	e := echo.New()
@@ -113,14 +128,36 @@ func main() {
 	budgets.GET("/active", budgetHandler.GetActive)
 	budgets.PUT("/:id", budgetHandler.Update)
 	budgets.DELETE("/:id", budgetHandler.Delete)
+	
+	// Budget Items
+	budgets.POST("/:id/items", budgetHandler.AddBudgetItem)
+	budgets.GET("/:id/items/:itemId", budgetHandler.GetBudgetItem)
+	budgets.PUT("/:id/items/:itemId", budgetHandler.UpdateBudgetItem)
+	budgets.DELETE("/:id/items/:itemId", budgetHandler.DeleteBudgetItem)
 
 	// Transactions
 	transactions := api.Group("/transactions")
 	transactions.POST("", transactionHandler.Create)
 	transactions.GET("", transactionHandler.List)
+	transactions.GET("/filtered", transactionHandler.ListWithFilters)
+	transactions.GET("/spending-by-category", transactionHandler.GetSpendingByCategory)
+	transactions.GET("/monthly-trends", transactionHandler.GetMonthlyTrends)
 	transactions.GET("/:id", transactionHandler.GetByID)
 	transactions.PUT("/:id", transactionHandler.Update)
 	transactions.DELETE("/:id", transactionHandler.Delete)
+
+	// Dashboard
+	dashboard := api.Group("/dashboard")
+	dashboard.GET("/summary", dashboardHandler.GetSummary)
+	dashboard.GET("/recent-transactions", dashboardHandler.GetRecentTransactions)
+	dashboard.GET("/top-categories", dashboardHandler.GetTopCategories)
+	dashboard.GET("/budget-progress", dashboardHandler.GetBudgetProgress)
+
+	// Reports
+	reports := api.Group("/reports")
+	reports.GET("/budget-vs-actual", reportHandler.GetBudgetVsActual)
+	reports.GET("/spending-by-category", reportHandler.GetSpendingByCategory)
+	reports.GET("/monthly-trends", reportHandler.GetMonthlyTrends)
 
 	// Start Server
 	fmt.Printf("Financial Service starting on port %s...\n", cfg.Port)

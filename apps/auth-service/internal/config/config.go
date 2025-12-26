@@ -19,7 +19,9 @@ type Config struct {
 func LoadConfig() (config Config, err error) {
 	viper.SetDefault("PORT", "8081")
 	viper.SetDefault("APP_ENV", "production")
+	viper.SetDefault("MONGODB_URI", "mongodb://mongodb:27017")
 	viper.SetDefault("MONGODB_DATABASE", "gspend")
+	viper.SetDefault("REDIS_HOST", "redis")
 	viper.SetDefault("REDIS_PORT", "6379")
 
 	viper.AutomaticEnv()
