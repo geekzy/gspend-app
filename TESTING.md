@@ -2,69 +2,45 @@
 
 This guide explains how to run functional tests for the gSpend application.
 
-## Prerequisites
+## Quick Start
 
-Before running any functional tests, ensure all prerequisites are met by running:
-
+1. **Verify Prerequisites** (handles everything automatically):
 ```bash
 ./scripts/verify_test_prerequisites.sh
 ```
 
-This script will check:
-- ✅ MongoDB connection
-- ✅ Seeded system categories
-- ✅ Database indexes
-- ✅ Auth service running
-- ✅ Financial service running
-- ✅ Required tools (curl, jq, go)
-
-## Automatic Setup
-
-The verification script can automatically seed the database if needed:
-
+2. **Run Tests**:
 ```bash
-# Run verification and follow prompts for automatic seeding
-./scripts/verify_test_prerequisites.sh
+# Profile management tests
+cd apps/auth-service && ./test_profile_endpoints.sh
+
+# Budget item tests  
+cd apps/financial-service && ./test_budget_items.sh
 ```
 
-## Manual Setup
+## What the Prerequisites Script Does
 
-If you prefer manual setup:
+The `verify_test_prerequisites.sh` script automatically:
+- ✅ Checks MongoDB connection
+- ✅ Verifies seeded system categories (auto-seeds if missing)
+- ✅ Creates database indexes (auto-creates if missing)
+- ✅ Validates auth service running
+- ✅ Validates financial service running
+- ✅ Checks required tools (curl, jq, go)
 
-### 1. Start MongoDB
-```bash
-# Using Docker
-docker run -d -p 27017:27017 --name mongodb mongo:latest
+## Starting Services
 
-# Or using local MongoDB installation
-mongod --dbpath /path/to/your/db
-```
-
-### 2. Seed Categories
-```bash
-cd apps/financial-service
-go run scripts/seed_categories.go
-```
-
-### 3. Create Database Indexes
-```bash
-cd apps/financial-service
-go run scripts/create_indexes.go
-```
-
-### 4. Start Services
+If services aren't running, start them:
 
 **Auth Service:**
 ```bash
-cd apps/auth-service
-go run cmd/server/main.go
+cd apps/auth-service && go run cmd/server/main.go
 # Runs on http://localhost:8081
 ```
 
 **Financial Service:**
 ```bash
-cd apps/financial-service
-go run cmd/server/main.go
+cd apps/financial-service && go run cmd/server/main.go
 # Runs on http://localhost:8082
 ```
 
@@ -168,20 +144,17 @@ apt-get install curl   # Ubuntu
 
 ### Test Data Issues
 
-**Categories not seeded:**
+The prerequisites script handles seeding automatically, but if you need manual intervention:
+
+**Force re-seed categories:**
 ```bash
-cd apps/financial-service
-go run scripts/seed_categories.go
+# Remove existing categories first
+mongosh gspend --eval "db.categories.deleteMany({isSystem: true})"
+# Then run the script again
+./scripts/verify_test_prerequisites.sh
 ```
 
-**Database indexes missing:**
-```bash
-cd apps/financial-service
-go run scripts/create_indexes.go
-```
-
-**Test user conflicts:**
-The test scripts automatically clean up test users, but you can manually clean up:
+**Clean up test users:**
 ```bash
 mongosh gspend --eval "db.users.deleteMany({email: /test/})"
 ```
@@ -198,7 +171,7 @@ Successful test output will show:
 
 When adding new functional tests:
 
-1. **Check prerequisites** - Use the verification functions
+1. **Use the verification functions** - Import checks from the prerequisites script
 2. **Clean up data** - Remove test data after tests
 3. **Use real data** - Integrate with seeded categories/users
 4. **Validate responses** - Parse JSON and check success/error states
