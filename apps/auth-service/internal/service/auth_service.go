@@ -33,6 +33,16 @@ func (s *AuthService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 		return nil, errors.New("user already exists")
 	}
 
+	// Validate password strength
+	if !util.ValidatePassword(req.Password) {
+		return nil, errors.New("password must be at least 8 characters with uppercase, lowercase, and number")
+	}
+
+	// Validate family size
+	if req.FamilySize < 0 || req.FamilySize > 5 {
+		return nil, errors.New("family size must be between 0 and 5 children")
+	}
+
 	// Hash password
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
@@ -86,6 +96,83 @@ func (s *AuthService) GetProfile(ctx context.Context, userID string) (*dto.UserD
 		FullName:   user.FullName,
 		FamilySize: user.FamilySize,
 	}, nil
+}
+
+func (s *AuthService) UpdateProfile(ctx context.Context, userID string, req *dto.UpdateProfileRequest) (*dto.UserDTO, error) {
+	// Get current user
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+
+	// Validate family size (0-5 children) first
+	if req.FamilySize < 0 || req.FamilySize > 5 {
+		return nil, errors.New("family size must be between 0 and 5 children")
+	}
+
+	// Check if email is being changed and if it's already in use by another user
+	if req.Email != user.Email {
+		exists, err := s.userRepo.Exists(ctx, req.Email)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			return nil, errors.New("email already in use")
+		}
+	}
+
+	// Update user fields
+	user.FullName = req.FullName
+	user.FamilySize = req.FamilySize
+	user.Email = req.Email
+
+	// Save to database
+	if err := s.userRepo.Update(ctx, user); err != nil {
+		return nil, err
+	}
+
+	return &dto.UserDTO{
+		ID:         user.ID.Hex(),
+		Email:      user.Email,
+		FullName:   user.FullName,
+		FamilySize: user.FamilySize,
+	}, nil
+}
+
+func (s *AuthService) ChangePassword(ctx context.Context, userID string, req *dto.ChangePasswordRequest) error {
+	// Get current user
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return errors.New("user not found")
+	}
+
+	// Verify current password
+	if !util.CheckPasswordHash(req.CurrentPassword, user.PasswordHash) {
+		return errors.New("current password is incorrect")
+	}
+
+	// Validate new password strength
+	if !util.ValidatePassword(req.NewPassword) {
+		return errors.New("new password must be at least 8 characters with uppercase, lowercase, and number")
+	}
+
+	// Hash new password
+	hashedPassword, err := util.HashPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	// Update password
+	user.PasswordHash = hashedPassword
+
+	// Save to database
+	return s.userRepo.Update(ctx, user)
 }
 
 func (s *AuthService) ValidateJWT(token string) (*util.JWTClaims, error) {

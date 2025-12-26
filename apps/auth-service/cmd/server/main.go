@@ -68,6 +68,8 @@ func main() {
 	v1.POST("/register", authHandler.Register)
 	v1.POST("/login", authHandler.Login)
 	v1.GET("/me", authHandler.GetProfile, middleware.AuthMiddleware(&cfg))
+	v1.PUT("/me", authHandler.UpdateProfile, middleware.AuthMiddleware(&cfg))
+	v1.POST("/change-password", authHandler.ChangePassword, middleware.AuthMiddleware(&cfg))
 
 	// Start gRPC Server
 	authGRPCService := grpc.NewAuthGRPCService(authService)
