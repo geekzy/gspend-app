@@ -2,9 +2,15 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+// Errors
+var (
+	ErrSystemCategoryProtected = errors.New("system categories cannot be deleted")
 )
 
 type CategoryType string

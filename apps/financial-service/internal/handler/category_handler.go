@@ -72,18 +72,30 @@ func (h *CategoryHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID"})
 	}
 
-	req := new(dto.CreateCategoryRequest)
+	// Get existing category first
+	existingCategory, err := h.categoryService.GetCategory(c.Request().Context(), id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	if existingCategory == nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "category not found"})
+	}
+
+	req := new(dto.UpdateCategoryRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request body"})
 	}
 
+	// Update only the provided fields
 	category := &domain.Category{
 		ID:        objectID,
+		UserID:    existingCategory.UserID,
 		Name:      req.Name,
-		Type:      domain.CategoryType(req.Type),
+		Type:      existingCategory.Type, // Keep existing type
 		Icon:      req.Icon,
 		Color:     req.Color,
 		SortOrder: req.SortOrder,
+		IsSystem:  existingCategory.IsSystem,
 	}
 
 	if err := h.categoryService.UpdateCategory(c.Request().Context(), category); err != nil {
@@ -95,6 +107,19 @@ func (h *CategoryHandler) Update(c echo.Context) error {
 
 func (h *CategoryHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
+	_, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID"})
+	}
+
+	// Check if category is system protected
+	if err := h.categoryService.ValidateSystemCategoryProtection(c.Request().Context(), id); err != nil {
+		if err == domain.ErrSystemCategoryProtected {
+			return c.JSON(http.StatusForbidden, map[string]string{"error": "System categories cannot be deleted"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
 	if err := h.categoryService.DeleteCategory(c.Request().Context(), id); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}

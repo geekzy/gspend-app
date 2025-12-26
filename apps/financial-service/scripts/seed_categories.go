@@ -1,86 +1,18 @@
-package service
+package main
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/domain"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-type CategoryService struct {
-	categoryRepo domain.CategoryRepository
-}
-
-func NewCategoryService(categoryRepo domain.CategoryRepository) *CategoryService {
-	return &CategoryService{
-		categoryRepo: categoryRepo,
-	}
-}
-
-func (s *CategoryService) CreateCategory(ctx context.Context, category *domain.Category) error {
-	return s.categoryRepo.Create(ctx, category)
-}
-
-func (s *CategoryService) GetCategory(ctx context.Context, id string) (*domain.Category, error) {
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.categoryRepo.GetByID(ctx, objectID)
-}
-
-func (s *CategoryService) ListUserCategories(ctx context.Context, userID string, categoryType domain.CategoryType) ([]*domain.Category, error) {
-	objectID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return nil, err
-	}
-	return s.categoryRepo.ListByUserID(ctx, objectID, categoryType)
-}
-
-func (s *CategoryService) UpdateCategory(ctx context.Context, category *domain.Category) error {
-	return s.categoryRepo.Update(ctx, category)
-}
-
-func (s *CategoryService) DeleteCategory(ctx context.Context, id string) error {
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return err
-	}
-	return s.categoryRepo.Delete(ctx, objectID)
-}
-// InitializeSystemCategories ensures system categories are available
-func (s *CategoryService) InitializeSystemCategories(ctx context.Context) error {
-	// Check if system categories already exist
-	systemCategories, err := s.categoryRepo.ListSystem(ctx, "")
-	if err != nil {
-		return err
-	}
-
-	// If system categories already exist, skip initialization
-	if len(systemCategories) > 0 {
-		return nil
-	}
-
-	// Create system categories
-	familyCategories := s.getFamilyCategories()
-	for _, categoryData := range familyCategories {
-		category := &domain.Category{
-			UserID:    nil, // System categories have no user
-			Name:      categoryData.Name,
-			Type:      categoryData.Type,
-			Icon:      categoryData.Icon,
-			Color:     categoryData.Color,
-			IsSystem:  true,
-			SortOrder: categoryData.SortOrder,
-		}
-
-		if err := s.categoryRepo.Create(ctx, category); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
 
 // FamilyCategoryData represents the seed data for family-oriented categories
 type FamilyCategoryData struct {
@@ -92,7 +24,7 @@ type FamilyCategoryData struct {
 }
 
 // getFamilyCategories returns the predefined family-oriented categories
-func (s *CategoryService) getFamilyCategories() []FamilyCategoryData {
+func getFamilyCategories() []FamilyCategoryData {
 	return []FamilyCategoryData{
 		// Housing & Utilities (1-10)
 		{Name: "Rent/Mortgage", Type: domain.CategoryTypeExpense, Icon: "🏠", Color: "#3B82F6", SortOrder: 1},
@@ -151,26 +83,92 @@ func (s *CategoryService) getFamilyCategories() []FamilyCategoryData {
 	}
 }
 
-// ListSystemCategories returns all system categories
-func (s *CategoryService) ListSystemCategories(ctx context.Context, categoryType domain.CategoryType) ([]*domain.Category, error) {
-	return s.categoryRepo.ListSystem(ctx, categoryType)
-}
+func main() {
+	// Get MongoDB URI from environment or use default
+	mongoURI := os.Getenv("MONGODB_URI")
+	if mongoURI == "" {
+		mongoURI = "mongodb://localhost:27017"
+	}
 
-// ValidateSystemCategoryProtection ensures system categories cannot be deleted
-func (s *CategoryService) ValidateSystemCategoryProtection(ctx context.Context, id string) error {
-	objectID, err := primitive.ObjectIDFromHex(id)
+	mongoDatabase := os.Getenv("MONGODB_DATABASE")
+	if mongoDatabase == "" {
+		mongoDatabase = "gspend"
+	}
+
+	// Connect to MongoDB
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(mongoURI))
 	if err != nil {
-		return err
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
+	defer client.Disconnect(context.Background())
 
-	category, err := s.categoryRepo.GetByID(ctx, objectID)
+	db := client.Database(mongoDatabase)
+	collection := db.Collection("categories")
+
+	fmt.Println("Seeding family-oriented categories...")
+
+	// Check if system categories already exist
+	count, err := collection.CountDocuments(context.Background(), bson.M{"isSystem": true})
 	if err != nil {
-		return err
+		log.Fatalf("Failed to check existing categories: %v", err)
 	}
 
-	if category != nil && category.IsSystem {
-		return domain.ErrSystemCategoryProtected
+	if count > 0 {
+		fmt.Printf("Found %d existing system categories. Skipping seed to avoid duplicates.\n", count)
+		fmt.Println("To re-seed, first remove existing system categories.")
+		return
 	}
 
-	return nil
+	// Prepare categories for insertion
+	familyCategories := getFamilyCategories()
+	var categories []interface{}
+	now := time.Now()
+
+	for _, catData := range familyCategories {
+		category := domain.Category{
+			ID:        primitive.NewObjectID(),
+			UserID:    nil, // System categories have no user
+			Name:      catData.Name,
+			Type:      catData.Type,
+			Icon:      catData.Icon,
+			Color:     catData.Color,
+			IsSystem:  true,
+			SortOrder: catData.SortOrder,
+			CreatedAt: now,
+			UpdatedAt: now,
+		}
+		categories = append(categories, category)
+	}
+
+	// Insert all categories
+	result, err := collection.InsertMany(context.Background(), categories)
+	if err != nil {
+		log.Fatalf("Failed to insert categories: %v", err)
+	}
+
+	fmt.Printf("✓ Successfully seeded %d family-oriented categories!\n", len(result.InsertedIDs))
+	
+	// Print summary by type
+	expenseCount := 0
+	incomeCount := 0
+	for _, catData := range familyCategories {
+		if catData.Type == domain.CategoryTypeExpense {
+			expenseCount++
+		} else {
+			incomeCount++
+		}
+	}
+	
+	fmt.Printf("  - %d expense categories\n", expenseCount)
+	fmt.Printf("  - %d income categories\n", incomeCount)
+	fmt.Println("\nCategories are organized by:")
+	fmt.Println("  • Housing & Utilities")
+	fmt.Println("  • Food & Groceries") 
+	fmt.Println("  • Children & Family")
+	fmt.Println("  • Transportation")
+	fmt.Println("  • Healthcare")
+	fmt.Println("  • Personal & Clothing")
+	fmt.Println("  • Entertainment & Recreation")
+	fmt.Println("  • Income Sources")
+	fmt.Println("\nFamily financial management is now ready to use!")
 }
