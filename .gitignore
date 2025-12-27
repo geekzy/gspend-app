@@ -34,3 +34,7 @@ coverage.out
 
 # Dependencies
 vendor/
+
+# Test results
+test-results/
+*.test-results.json

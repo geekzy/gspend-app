@@ -51,7 +51,37 @@ export interface Transaction {
     notes: string
 }
 
+// Dashboard specific interfaces
+export interface BudgetProgress {
+    totalBudget: number
+    totalSpent: number
+    remainingBudget: number
+    percentageUsed: number
+}
+
+export interface CategorySpending {
+    categoryId: string
+    categoryName: string
+    amount: number
+    percentage: number
+}
+
+export interface DashboardSummary {
+    totalBalance: number
+    monthlyIncome: number
+    monthlyExpenses: number
+    budgetProgress: BudgetProgress
+    topCategories: CategorySpending[]
+    recentTransactions: Transaction[]
+}
+
 export const financialService = {
+    // Dashboard
+    async getDashboardSummary(): Promise<DashboardSummary> {
+        const response = await financeApi.get('/dashboard/summary')
+        return response.data
+    },
+
     // Categories
     async getCategories(type?: string): Promise<Category[]> {
         const params = type ? { type } : {}

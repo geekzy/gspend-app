@@ -38,9 +38,9 @@
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">Total Balance</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-bold text-gray-900 leading-tight">${{ totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</div>
-                      <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
-                        +2.5%
+                      <div class="text-2xl font-bold text-gray-900 leading-tight">${{ dashboardData?.totalBalance?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
+                      <div class="ml-2 flex items-baseline text-sm font-semibold" :class="balanceChangeClass">
+                        {{ balanceChangeText }}
                       </div>
                     </dd>
                   </dl>
@@ -65,14 +65,18 @@
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">Monthly Budget</dt>
                     <dd class="flex items-baseline justify-between mb-1">
-                      <div class="text-2xl font-bold text-gray-900 leading-tight">${{ spentAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</div>
-                      <div v-if="activeBudget" class="text-xs text-gray-400 font-medium whitespace-nowrap">Plan: ${{ activeBudget.totalAmount.toLocaleString() }}</div>
+                      <div class="text-2xl font-bold text-gray-900 leading-tight">${{ dashboardData?.budgetProgress?.totalSpent?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
+                      <div v-if="dashboardData?.budgetProgress" class="text-xs text-gray-400 font-medium whitespace-nowrap">Plan: ${{ dashboardData.budgetProgress.totalBudget.toLocaleString() }}</div>
                     </dd>
                   </dl>
-                  <!-- Budget Bar -->
-                  <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mt-3">
-                    <div class="bg-blue-600 h-full rounded-full transition-all duration-1000" :style="{ width: budgetPercent + '%' }"></div>
-                  </div>
+                  <!-- Budget Progress Bar -->
+                  <ProgressBar
+                    v-if="dashboardData?.budgetProgress"
+                    :label="'Budget Progress'"
+                    :spent="dashboardData.budgetProgress.totalSpent"
+                    :total="dashboardData.budgetProgress.totalBudget"
+                    :show-amounts="false"
+                  />
                 </div>
               </div>
             </div>
@@ -92,9 +96,9 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 truncate">Monthly Spending</dt>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Monthly Expenses</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-bold text-red-600 leading-tight">${{ spentAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</div>
+                      <div class="text-2xl font-bold text-red-600 leading-tight">${{ dashboardData?.monthlyExpenses?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
                     </dd>
                   </dl>
                 </div>
@@ -102,7 +106,8 @@
             </div>
             <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
               <div class="text-sm">
-                <span class="text-red-500 font-medium">↑ 12%</span> more than last month
+                <span class="text-gray-500">Income: </span>
+                <span class="text-green-600 font-medium">${{ dashboardData?.monthlyIncome?.toLocaleString() || '0' }}</span>
               </div>
             </div>
           </div>
@@ -117,7 +122,7 @@
               <router-link to="/transactions" class="text-sm font-semibold text-primary-600 hover:text-primary-500">View All</router-link>
             </div>
             <div class="overflow-y-auto min-h-[300px]">
-              <div v-if="transactions.length === 0" class="flex flex-col items-center justify-center p-12 text-gray-400">
+              <div v-if="!dashboardData?.recentTransactions?.length" class="flex flex-col items-center justify-center p-12 text-gray-400">
                 <WalletIcon class="w-12 h-12 mb-4 opacity-20" />
                 <p>No recent transactions found.</p>
               </div>
@@ -130,7 +135,7 @@
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                  <tr v-for="tx in transactions" :key="tx.id" class="hover:bg-gray-50 transition-colors pointer-cursor">
+                  <tr v-for="tx in dashboardData.recentTransactions" :key="tx.id" class="hover:bg-gray-50 transition-colors pointer-cursor">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-xl bg-gray-50 text-xl shadow-inner border border-gray-100">
@@ -158,23 +163,35 @@
 
           <!-- Sidebar Widgets -->
           <div class="space-y-8">
-            <!-- Categories Breakdown (Mini) -->
+            <!-- Categories Breakdown -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h3 class="text-lg font-bold text-gray-900 mb-6">Top Categories</h3>
-              <div v-if="topCategories.length === 0" class="text-center py-8 text-gray-400 text-sm">
-                No budget data available.
+              <div v-if="!dashboardData?.topCategories?.length" class="text-center py-8 text-gray-400 text-sm">
+                No spending data available.
               </div>
-              <div v-else class="space-y-4">
-                <div v-for="cat in topCategories" :key="cat.name">
-                  <div class="flex items-center justify-between mb-1.5 px-0.5">
-                    <div class="flex items-center">
-                      <span class="mr-2 text-base">{{ cat.icon }}</span>
-                      <span class="text-sm font-bold text-gray-700">{{ cat.name }}</span>
+              <div v-else>
+                <!-- Pie Chart -->
+                <div class="mb-6">
+                  <PieChart 
+                    :data="chartData" 
+                    :width="250" 
+                    :height="250"
+                    :show-legend="false"
+                  />
+                </div>
+                <!-- Category List -->
+                <div class="space-y-3">
+                  <div v-for="(cat, index) in dashboardData.topCategories.slice(0, 4)" :key="cat.categoryId">
+                    <div class="flex items-center justify-between mb-1.5 px-0.5">
+                      <div class="flex items-center">
+                        <div 
+                          class="w-3 h-3 rounded-full mr-2 flex-shrink-0"
+                          :style="{ backgroundColor: chartColors[index] }"
+                        ></div>
+                        <span class="text-sm font-bold text-gray-700">{{ cat.categoryName }}</span>
+                      </div>
+                      <span class="text-sm font-bold text-gray-900">${{ cat.amount.toLocaleString() }}</span>
                     </div>
-                    <span class="text-sm font-bold text-gray-900">${{ cat.spent.toLocaleString() }}</span>
-                  </div>
-                  <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden shadow-inner">
-                    <div class="h-full rounded-full" :style="{ width: cat.percent + '%', backgroundColor: cat.color }"></div>
                   </div>
                 </div>
               </div>
@@ -192,7 +209,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
-import { financialService, Transaction, Budget } from '@/services/financialService'
+import ProgressBar from '@/components/charts/ProgressBar.vue'
+import PieChart from '@/components/charts/PieChart.vue'
+import { financialService, DashboardSummary } from '@/services/financialService'
 import { useAuthStore } from '@/stores/auth'
 import { 
   WalletIcon, 
@@ -201,52 +220,62 @@ import {
 } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
-const transactions = ref<Transaction[]>([])
-const activeBudget = ref<Budget | null>(null)
+const dashboardData = ref<DashboardSummary | null>(null)
 const isLoading = ref(true)
+const error = ref<string | null>(null)
 
 const userName = computed(() => authStore.user?.fullName || 'Family')
 
-const totalBalance = computed(() => {
-  // Logic to calculate balance from transactions/incomes
-  return 12450.00 // Placeholder until more logic added
-})
-
-const spentAmount = computed(() => {
-  if (!activeBudget.value) return 0
-  return activeBudget.value.items.reduce((acc, item) => acc + item.spentAmount, 0)
-})
-
 const budgetPercent = computed(() => {
-  if (!activeBudget.value || activeBudget.value.totalAmount === 0) return 0
-  return Math.min(Math.round((spentAmount.value / activeBudget.value.totalAmount) * 100), 100)
+  if (!dashboardData.value?.budgetProgress) return 0
+  return Math.round(dashboardData.value.budgetProgress.percentageUsed)
 })
 
-const topCategories = computed(() => {
-  if (!activeBudget.value) return []
-  return activeBudget.value.items
-    .sort((a, b) => b.spentAmount - a.spentAmount)
-    .slice(0, 4)
-    .map(item => ({
-      name: item.categoryName,
-      spent: item.spentAmount,
-      percent: Math.round((item.spentAmount / item.plannedAmount) * 100),
-      color: '#3b82f6', // Default color
-      icon: '📊'
-    }))
+const balanceChangeClass = computed(() => {
+  // For now, assume positive change - in real app this would be calculated
+  return 'text-green-600'
+})
+
+const balanceChangeText = computed(() => {
+  // Placeholder - in real app this would be calculated from historical data
+  return '+2.5%'
+})
+
+const chartColors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899']
+
+const chartData = computed(() => {
+  if (!dashboardData.value?.topCategories?.length) return []
+  
+  return dashboardData.value.topCategories.slice(0, 6).map(cat => ({
+    label: cat.categoryName,
+    value: cat.amount
+  }))
 })
 
 onMounted(async () => {
   try {
     isLoading.value = true
-    const [txData, budgetData] = await Promise.all([
-      financialService.getTransactions({ limit: 5 }),
-      financialService.getActiveBudget()
-    ])
-    transactions.value = txData
-    activeBudget.value = budgetData
+    error.value = null
+    
+    dashboardData.value = await financialService.getDashboardSummary()
   } catch (err) {
     console.error('Failed to fetch dashboard data:', err)
+    error.value = 'Failed to load dashboard data. Please try again.'
+    
+    // Fallback to empty data structure to prevent UI errors
+    dashboardData.value = {
+      totalBalance: 0,
+      monthlyIncome: 0,
+      monthlyExpenses: 0,
+      budgetProgress: {
+        totalBudget: 0,
+        totalSpent: 0,
+        remainingBudget: 0,
+        percentageUsed: 0
+      },
+      topCategories: [],
+      recentTransactions: []
+    }
   } finally {
     isLoading.value = false
   }
