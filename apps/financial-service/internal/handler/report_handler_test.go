@@ -287,11 +287,11 @@ func TestReportHandler_GetMonthlyTrends(t *testing.T) {
 			MonthlyData: []*domain.MonthlySpending{
 				{
 					Month:  time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
-					Amount: 500.0,
+					Amount: 550.0,
 				},
 				{
 					Month:  time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
-					Amount: 600.0,
+					Amount: 550.0,
 				},
 				{
 					Month:  time.Date(2024, 3, 1, 0, 0, 0, 0, time.UTC),

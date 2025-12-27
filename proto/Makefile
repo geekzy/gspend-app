@@ -1,16 +1,16 @@
 .PHONY: generate
 generate:
 	@echo "Generating Protocol Buffer code..."
-	mkdir -p ../apps/auth-service/pkg/proto
-	mkdir -p ../apps/financial-service/pkg/proto
+	mkdir -p ../apps/auth-service/internal/proto
+	mkdir -p ../apps/financial-service/internal/proto
 	protoc --proto_path=. \
-	       --go_out=../apps/auth-service/pkg/proto --go_opt=paths=source_relative \
-	       --go-grpc_out=../apps/auth-service/pkg/proto --go-grpc_opt=paths=source_relative \
+	       --go_out=../apps/auth-service/internal/proto --go_opt=paths=source_relative \
+	       --go-grpc_out=../apps/auth-service/internal/proto --go-grpc_opt=paths=source_relative \
 	       auth/v1/auth.proto
 	
 	protoc --proto_path=. \
-	       --go_out=../apps/financial-service/pkg/proto --go_opt=paths=source_relative \
-	       --go-grpc_out=../apps/financial-service/pkg/proto --go-grpc_opt=paths=source_relative \
+	       --go_out=../apps/financial-service/internal/proto --go_opt=paths=source_relative \
+	       --go-grpc_out=../apps/financial-service/internal/proto --go-grpc_opt=paths=source_relative \
 	       auth/v1/auth.proto
 	@echo "Done!"
 
