@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/config"
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/grpc"
@@ -73,9 +74,14 @@ func main() {
 
 	// Start gRPC Server
 	authGRPCService := grpc.NewAuthGRPCService(authService)
-	grpcServer := grpc.NewGRPCServer(authGRPCService, 9092) // Changed from 9091 to 9092
+	grpcPort, err := strconv.Atoi(cfg.GRPCPort)
+	if err != nil {
+		log.Fatalf("Invalid gRPC port: %v", err)
+	}
+	grpcServer := grpc.NewGRPCServer(authGRPCService, grpcPort)
 
 	go func() {
+		fmt.Printf("gRPC Server starting on port %s...\n", cfg.GRPCPort)
 		if err := grpcServer.Start(); err != nil {
 			log.Fatalf("Failed to start gRPC server: %v", err)
 		}

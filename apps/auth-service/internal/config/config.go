@@ -6,6 +6,7 @@ import (
 
 type Config struct {
 	Port           string `mapstructure:"PORT"`
+	GRPCPort       string `mapstructure:"GRPC_PORT"`
 	AppEnv         string `mapstructure:"APP_ENV"`
 	MongoURI       string `mapstructure:"MONGODB_URI"`
 	MongoDatabase  string `mapstructure:"MONGODB_DATABASE"`
@@ -18,6 +19,7 @@ type Config struct {
 
 func LoadConfig() (config Config, err error) {
 	viper.SetDefault("PORT", "8081")
+	viper.SetDefault("GRPC_PORT", "9091")
 	viper.SetDefault("APP_ENV", "production")
 	viper.SetDefault("MONGODB_URI", "mongodb://mongodb:27017")
 	viper.SetDefault("MONGODB_DATABASE", "gspend")
