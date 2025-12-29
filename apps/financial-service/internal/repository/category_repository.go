@@ -54,7 +54,7 @@ func (r *mongoCategoryRepository) ListByUserID(ctx context.Context, userID primi
 		filter["type"] = categoryType
 	}
 
-	opts := options.Find().SetSort(bson.M{"sortOrder": 1, "name": 1})
+	opts := options.Find().SetSort(bson.D{{"sortOrder", 1}, {"name", 1}})
 	cursor, err := r.collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (r *mongoCategoryRepository) ListSystem(ctx context.Context, categoryType d
 		filter["type"] = categoryType
 	}
 
-	opts := options.Find().SetSort(bson.M{"sortOrder": 1, "name": 1})
+	opts := options.Find().SetSort(bson.D{{"sortOrder", 1}, {"name", 1}})
 	cursor, err := r.collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err

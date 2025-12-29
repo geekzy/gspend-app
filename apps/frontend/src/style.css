@@ -24,3 +24,30 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
+/* Enhanced Focus Indicators for Desktop Keyboard Navigation */
+:focus-visible {
+  outline: 2px solid #2563eb; /* blue-600 */
+  outline-offset: 2px;
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: more) {
+  :root {
+    --color-primary: #000000;
+    --color-secondary: #ffffff;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  button {
+    border: 2px solid #000000;
+  }
+}

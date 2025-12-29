@@ -32,10 +32,25 @@ export interface ApiError {
 export function transformError(error: ApiError): UserFriendlyError {
     // Network errors
     if (!error.response) {
+        const isOffline = typeof navigator !== 'undefined' && !navigator.onLine
+
+        if (isOffline) {
+            return {
+                title: 'No Internet Connection',
+                message: 'You seem to be offline. Please check your internet connection.',
+                suggestion: 'We will try to reconnect automatically when you are back online.',
+                action: {
+                    label: 'Retry Now',
+                    handler: () => window.location.reload()
+                },
+                type: 'warning'
+            }
+        }
+
         return {
-            title: 'Connection Problem',
-            message: 'Unable to connect to the server. Please check your internet connection.',
-            suggestion: 'Try refreshing the page or check your network connection.',
+            title: 'Server Unavailable',
+            message: 'Unable to connect to the server. The service might be down.',
+            suggestion: 'Please try again in a few moments.',
             action: {
                 label: 'Retry',
                 handler: () => window.location.reload()

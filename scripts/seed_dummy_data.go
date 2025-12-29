@@ -14,12 +14,14 @@ import (
 )
 
 type User struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Email     string             `bson:"email"`
-	Username  string             `bson:"username"`
-	Password  string             `bson:"password"`
-	CreatedAt time.Time          `bson:"createdAt"`
-	UpdatedAt time.Time          `bson:"updatedAt"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Email        string             `bson:"email"`
+	Username     string             `bson:"username"`
+	PasswordHash string             `bson:"passwordHash"`
+	FullName     string             `bson:"fullName"`
+	FamilySize   int                `bson:"familySize"`
+	CreatedAt    time.Time          `bson:"createdAt"`
+	UpdatedAt    time.Time          `bson:"updatedAt"`
 }
 
 type Category struct {
@@ -114,14 +116,18 @@ func main() {
 
 	// Create demo user
 	fmt.Println("Creating demo user...")
-	userID := primitive.NewObjectID()
+	// Use fixed ID for demo consistency: 695284b2d79e48201abebde7
+	fixedID, _ := primitive.ObjectIDFromHex("695284b2d79e48201abebde7")
+	userID := fixedID
 	user := User{
-		ID:        userID,
-		Email:     "demo@gspend.com",
-		Username:  "demo",
-		Password:  "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // password: "password"
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:           userID,
+		Email:        "demo@gspend.com",
+		Username:     "demo",
+		PasswordHash: "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // password: "password"
+		FullName:     "Demo User",
+		FamilySize:   2,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 	_, err = db.Collection("users").InsertOne(context.Background(), user)
 	if err != nil {

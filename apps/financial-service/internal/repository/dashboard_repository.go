@@ -236,8 +236,8 @@ func (r *mongoDashboardRepository) GetCurrentMonthBudgetProgress(ctx context.Con
 	
 	err := r.budgetCollection.FindOne(ctx, bson.M{
 		"userId": userID,
-		"startDate": bson.M{"$lte": startOfMonth},
-		"endDate":   bson.M{"$gte": endOfMonth.Add(-time.Second)},
+		"startDate": bson.M{"$lt": endOfMonth},
+		"endDate":   bson.M{"$gte": startOfMonth},
 	}).Decode(&budget)
 	
 	if err != nil {

@@ -144,6 +144,10 @@ export const financialService = {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.DASHBOARD_SUMMARY, async () => {
             const response = await financeApi.get('/dashboard/summary')
+            // Backend returns wrapped response { success: true, data: ... }
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
