@@ -34,6 +34,48 @@ const routes: RouteRecordRaw[] = [
         name: 'Transactions',
         component: () => import('@/views/transaction/TransactionIndex.vue'),
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/Profile.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile/edit',
+        name: 'ProfileEdit',
+        component: () => import('@/views/profile/ProfileEdit.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile/password',
+        name: 'PasswordChange',
+        component: () => import('@/views/profile/PasswordChange.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/reports',
+        name: 'Reports',
+        component: () => import('@/views/reports/ReportsIndex.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/reports/budget-vs-actual',
+        name: 'BudgetVsActual',
+        component: () => import('@/views/reports/BudgetVsActual.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/reports/spending-by-category',
+        name: 'SpendingByCategory',
+        component: () => import('@/views/reports/SpendingByCategory.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/reports/monthly-trends',
+        name: 'MonthlyTrends',
+        component: () => import('@/views/reports/MonthlyTrends.vue'),
+        meta: { requiresAuth: true }
     }
 ]
 

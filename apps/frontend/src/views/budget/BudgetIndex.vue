@@ -55,6 +55,15 @@
               </p>
             </div>
             <div class="flex flex-col items-end">
+              <div class="flex items-center gap-2 mb-2">
+                <button 
+                  @click="openEditModal"
+                  class="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+                  title="Edit budget"
+                >
+                  <EditIcon class="w-5 h-5" />
+                </button>
+              </div>
               <div class="text-sm font-bold text-gray-500 mb-1">Total Allocated</div>
               <div class="text-4xl font-black text-gray-900">${{ activeBudget.totalAmount.toLocaleString() }}</div>
             </div>
@@ -195,6 +204,15 @@
           </form>
         </div>
       </div>
+
+      <!-- Edit Budget Modal -->
+      <BudgetEdit
+        v-if="showEditModal && activeBudget"
+        :budget="activeBudget"
+        :categories="categories"
+        @close="closeEditModal"
+        @saved="onBudgetSaved"
+      />
     </div>
   </MainLayout>
 </template>
@@ -202,6 +220,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
+import BudgetEdit from '@/components/forms/BudgetEdit.vue'
 import { financialService, Budget, Category } from '@/services/financialService'
 import { 
   BarChart3Icon, 
@@ -210,7 +229,8 @@ import {
   MoreVerticalIcon, 
   XIcon,
   InfoIcon,
-  XCircleIcon
+  XCircleIcon,
+  EditIcon
 } from 'lucide-vue-next'
 
 const activeBudget = ref<Budget | null>(null)
@@ -218,6 +238,7 @@ const categories = ref<Category[]>([])
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const showAddModal = ref(false)
+const showEditModal = ref(false)
 
 const newBudget = ref({
   name: '',
@@ -302,6 +323,19 @@ const handleCreateBudget = async () => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+const openEditModal = () => {
+  showEditModal.value = true
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+}
+
+const onBudgetSaved = async () => {
+  showEditModal.value = false
+  await fetchInitialData()
 }
 
 const getProgressBarClass = (spent: number, planned: number) => {

@@ -21,9 +21,25 @@
           <InfoIcon v-else class="w-5 h-5 text-blue-500" />
         </div>
         <div class="flex-1">
+          <p v-if="notification.title" class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">
+            {{ notification.title }}
+          </p>
           <p class="text-sm font-bold text-gray-900 leading-tight">
             {{ notification.message }}
           </p>
+          <div v-if="notification.actions && notification.actions.length" class="mt-3 flex gap-2">
+            <button
+              v-for="action in notification.actions"
+              :key="action.label"
+              @click="action.handler"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors"
+              :class="action.style === 'primary' 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            >
+              {{ action.label }}
+            </button>
+          </div>
         </div>
         <button 
           @click="removeNotification(notification.id)"

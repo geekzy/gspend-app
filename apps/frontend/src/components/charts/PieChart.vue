@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <canvas ref="chartCanvas" :width="width" :height="height"></canvas>
-    <div v-if="showLegend" class="mt-4 grid grid-cols-2 gap-2">
+    <div v-if="showLegend" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
       <div 
         v-for="(item, index) in data" 
         :key="index"
@@ -11,8 +11,8 @@
           class="w-3 h-3 rounded-full mr-2 flex-shrink-0"
           :style="{ backgroundColor: colors[index % colors.length] }"
         ></div>
-        <span class="text-gray-700 truncate">{{ item.label }}</span>
-        <span class="ml-auto text-gray-900 font-medium">${{ item.value.toLocaleString() }}</span>
+        <span class="text-gray-700 truncate flex-1">{{ item.label }}</span>
+        <span class="ml-2 text-gray-900 font-medium text-xs sm:text-sm">${{ item.value.toLocaleString() }}</span>
       </div>
     </div>
   </div>
@@ -91,7 +91,14 @@ const createChart = async () => {
               const percentage = ((value / total) * 100).toFixed(1)
               return `${context.label}: $${value.toLocaleString()} (${percentage}%)`
             }
-          }
+          },
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          borderColor: '#e5e7eb',
+          borderWidth: 1,
+          cornerRadius: 6,
+          displayColors: true
         }
       },
       animation: {
@@ -102,6 +109,20 @@ const createChart = async () => {
         arc: {
           borderWidth: 2
         }
+      },
+      // Mobile responsiveness
+      layout: {
+        padding: {
+          top: 10,
+          bottom: 10,
+          left: 10,
+          right: 10
+        }
+      },
+      // Touch interactions for mobile
+      interaction: {
+        intersect: false,
+        mode: 'nearest'
       }
     }
   } as ChartConfiguration<'doughnut'>

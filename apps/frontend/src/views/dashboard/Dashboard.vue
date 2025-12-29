@@ -1,8 +1,19 @@
 <template>
   <MainLayout>
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-      <div v-if="isLoading" class="flex items-center justify-center min-h-[400px]">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div v-if="isLoading" class="space-y-8">
+        <!-- Loading skeleton for stats -->
+        <SkeletonLoader type="stats" />
+        
+        <!-- Loading skeleton for content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2">
+            <SkeletonLoader type="table" :rows="5" />
+          </div>
+          <div>
+            <SkeletonLoader type="chart" />
+          </div>
+        </div>
       </div>
 
       <template v-else>
@@ -211,8 +222,12 @@ import { ref, onMounted, computed } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import ProgressBar from '@/components/charts/ProgressBar.vue'
 import PieChart from '@/components/charts/PieChart.vue'
+
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 import { financialService, DashboardSummary } from '@/services/financialService'
 import { useAuthStore } from '@/stores/auth'
+import { useLoadingStore } from '@/stores/loading'
+import { useNotificationStore } from '@/stores/notification'
 import { 
   WalletIcon, 
   BarChart3Icon, 
@@ -220,9 +235,12 @@ import {
 } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
+const loadingStore = useLoadingStore()
+const notificationStore = useNotificationStore()
 const dashboardData = ref<DashboardSummary | null>(null)
-const isLoading = ref(true)
 const error = ref<string | null>(null)
+
+const isLoading = computed(() => loadingStore.isLoading(loadingStore.LOADING_KEYS.DASHBOARD_SUMMARY))
 
 const userName = computed(() => authStore.user?.fullName || 'Family')
 
@@ -254,13 +272,12 @@ const chartData = computed(() => {
 
 onMounted(async () => {
   try {
-    isLoading.value = true
     error.value = null
-    
     dashboardData.value = await financialService.getDashboardSummary()
   } catch (err) {
     console.error('Failed to fetch dashboard data:', err)
     error.value = 'Failed to load dashboard data. Please try again.'
+    notificationStore.error('Failed to load dashboard data. Please refresh the page.')
     
     // Fallback to empty data structure to prevent UI errors
     dashboardData.value = {
@@ -276,8 +293,6 @@ onMounted(async () => {
       topCategories: [],
       recentTransactions: []
     }
-  } finally {
-    isLoading.value = false
   }
 })
 

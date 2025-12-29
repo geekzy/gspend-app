@@ -5,6 +5,7 @@
 This specification defines the requirements to complete the gSpend family financial management application for families with up to 5 children. The application currently has a solid foundation with:
 
 **Existing Implementation:**
+
 - Go microservices architecture (Auth Service, Financial Service)
 - Vue.js frontend with TypeScript and Pinia state management
 - MongoDB database with basic CRUD operations for budgets, income, transactions, and categories

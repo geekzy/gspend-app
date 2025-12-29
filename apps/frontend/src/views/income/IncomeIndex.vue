@@ -62,8 +62,17 @@
             Effective: {{ formatDate(income.effectiveDate) }}
           </div>
           <div class="flex gap-2">
-            <button class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all">Edit</button>
-            <button class="px-3 rounded-xl border border-gray-200 text-red-500 hover:bg-red-50 hover:border-red-100 transition-all">
+            <button 
+              @click="openEditModal(income)"
+              class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
+            >
+              Edit
+            </button>
+            <button 
+              @click="deleteIncome(income.id)"
+              class="px-3 rounded-xl border border-gray-200 text-red-500 hover:bg-red-50 hover:border-red-100 transition-all"
+              title="Delete income source"
+            >
               <Trash2Icon class="w-4 h-4" />
             </button>
           </div>
@@ -109,6 +118,14 @@
           </form>
         </div>
       </div>
+
+      <!-- Edit Income Modal -->
+      <IncomeEdit
+        v-if="showEditModal && editingIncome"
+        :income="editingIncome"
+        @close="closeEditModal"
+        @saved="onIncomeSaved"
+      />
     </div>
   </MainLayout>
 </template>
@@ -116,6 +133,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
+import IncomeEdit from '@/components/forms/IncomeEdit.vue'
 import { financialService, Income } from '@/services/financialService'
 import { 
   WalletIcon, 
@@ -128,6 +146,8 @@ const incomes = ref<Income[]>([])
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const showAddModal = ref(false)
+const showEditModal = ref(false)
+const editingIncome = ref<Income | null>(null)
 
 const newIncome = ref({
   source: '',
@@ -164,6 +184,35 @@ const handleAddIncome = async () => {
     console.error('Failed to add income:', err)
   } finally {
     isSubmitting.value = false
+  }
+}
+
+const openEditModal = (income: Income) => {
+  editingIncome.value = income
+  showEditModal.value = true
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+  editingIncome.value = null
+}
+
+const onIncomeSaved = async () => {
+  showEditModal.value = false
+  editingIncome.value = null
+  await fetchIncomes()
+}
+
+const deleteIncome = async (id: string) => {
+  if (!confirm('Are you sure you want to delete this income source?')) {
+    return
+  }
+  
+  try {
+    await financialService.deleteIncome(id)
+    await fetchIncomes()
+  } catch (err) {
+    console.error('Failed to delete income:', err)
   }
 }
 

@@ -36,14 +36,19 @@
         </div>
         <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
           <div class="flex items-center w-full">
-            <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
-              {{ userInitials }}
-            </div>
-            <div class="ml-3 flex-1 overflow-hidden">
-              <p class="text-sm font-semibold text-gray-900 truncate">{{ authStore.user?.fullName || 'User' }}</p>
-              <p class="text-xs text-gray-500 truncate">{{ authStore.user?.email || '' }}</p>
-            </div>
-            <button @click="logout" class="ml-auto p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors">
+            <router-link 
+              to="/profile" 
+              class="flex items-center flex-1 group hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
+            >
+              <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
+                {{ userInitials }}
+              </div>
+              <div class="ml-3 flex-1 overflow-hidden">
+                <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-primary-600">{{ authStore.user?.fullName || 'User' }}</p>
+                <p class="text-xs text-gray-500 truncate">{{ authStore.user?.email || '' }}</p>
+              </div>
+            </router-link>
+            <button @click="logout" class="ml-2 p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors">
               <LogOutIcon class="h-5 w-5" />
             </button>
           </div>
@@ -96,7 +101,8 @@ import {
   WalletIcon, 
   BarChart3Icon, 
   HistoryIcon, 
-  LogOutIcon 
+  LogOutIcon,
+  FileTextIcon
 } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -119,6 +125,7 @@ const navigation = [
   { name: 'Income', href: '/income', icon: WalletIcon },
   { name: 'Budget', href: '/budget', icon: BarChart3Icon },
   { name: 'Transactions', href: '/transactions', icon: HistoryIcon },
+  { name: 'Reports', href: '/reports', icon: FileTextIcon },
 ]
 
 const logout = () => {

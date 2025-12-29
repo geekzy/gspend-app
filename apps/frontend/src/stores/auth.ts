@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { authService } from '@/services/authService'
+import { authService, type UpdateProfileRequest, type ChangePasswordRequest } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
     const token = ref(localStorage.getItem('auth_token'))
@@ -27,6 +27,26 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function updateProfile(profileData: UpdateProfileRequest) {
+        try {
+            const response = await authService.updateProfile(profileData)
+            user.value = response.user
+            localStorage.setItem('user_profile', JSON.stringify(response.user))
+            return response
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async function changePassword(passwordData: ChangePasswordRequest) {
+        try {
+            const response = await authService.changePassword(passwordData)
+            return response
+        } catch (error) {
+            throw error
+        }
+    }
+
     function logout() {
         token.value = null
         user.value = null
@@ -40,6 +60,8 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         setSession,
         fetchProfile,
+        updateProfile,
+        changePassword,
         logout
     }
 })

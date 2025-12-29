@@ -10,24 +10,30 @@ import { Chart, ChartConfiguration, registerables } from 'chart.js'
 
 Chart.register(...registerables)
 
-interface ChartDataPoint {
+interface ChartDataItem {
   label: string
-  value: number
+  budgeted?: number
+  actual?: number
+  value?: number
 }
 
 interface Props {
-  data: ChartDataPoint[]
+  data: ChartDataItem[]
   width?: number
   height?: number
-  color?: string
+  type?: 'single' | 'comparison'
+  colors?: string[]
   label?: string
+  comparisonLabels?: { primary: string; secondary: string }
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 400,
-  height: 200,
-  color: '#3B82F6',
-  label: 'Spending'
+  height: 300,
+  type: 'single',
+  colors: () => ['#3B82F6', '#EF4444'],
+  label: 'Amount',
+  comparisonLabels: () => ({ primary: 'Budgeted', secondary: 'Actual' })
 })
 
 const chartCanvas = ref<HTMLCanvasElement>()
@@ -42,30 +48,58 @@ const createChart = async () => {
   }
 
   const config: ChartConfiguration = {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: props.data.map(item => item.label),
-      datasets: [{
-        label: props.label,
-        data: props.data.map(item => item.value),
-        borderColor: props.color,
-        backgroundColor: props.color + '20', // Add transparency
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: props.color,
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-      }]
+      datasets: props.type === 'comparison' ? [
+        {
+          label: props.comparisonLabels.primary,
+          data: props.data.map(item => item.budgeted || 0),
+          backgroundColor: props.colors[0] + '80', // Add transparency
+          borderColor: props.colors[0],
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
+        },
+        {
+          label: props.comparisonLabels.secondary,
+          data: props.data.map(item => item.actual || 0),
+          backgroundColor: props.colors[1] + '80', // Add transparency
+          borderColor: props.colors[1],
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
+        }
+      ] : [
+        {
+          label: props.label,
+          data: props.data.map(item => item.value || 0),
+          backgroundColor: props.data.map((_, index) => 
+            props.colors[index % props.colors.length] + '80'
+          ),
+          borderColor: props.data.map((_, index) => 
+            props.colors[index % props.colors.length]
+          ),
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
+        }
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: props.type === 'comparison',
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              size: 12
+            }
+          }
         },
         tooltip: {
           callbacks: {
@@ -133,14 +167,9 @@ const createChart = async () => {
           left: 10,
           right: 10
         }
-      },
-      // Touch interactions for mobile
-      interaction: {
-        intersect: false,
-        mode: 'index'
       }
     }
-  } as ChartConfiguration<'line'>
+  } as ChartConfiguration<'bar'>
 
   chartInstance = new Chart(chartCanvas.value, config)
 }
@@ -155,7 +184,7 @@ watch(() => props.data, () => {
   createChart()
 }, { deep: true })
 
-watch(() => [props.color, props.label], () => {
+watch(() => [props.type, props.colors], () => {
   createChart()
 }, { deep: true })
 </script>
