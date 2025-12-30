@@ -138,6 +138,7 @@
             <button
               @click="toggleSortOrder"
               class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Toggle sort order"
             >
               <ArrowUpDownIcon class="w-4 h-4" />
             </button>
@@ -187,6 +188,7 @@
                       @click="openEditModal(tx)"
                       class="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"
                       title="Edit transaction"
+                      aria-label="Edit transaction"
                     >
                       <EditIcon class="w-4 h-4" />
                     </button>
@@ -194,6 +196,7 @@
                       @click="deleteTransaction(tx.id)"
                       class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
                       title="Delete transaction"
+                      aria-label="Delete transaction"
                     >
                       <Trash2Icon class="w-4 h-4" />
                     </button>
@@ -221,7 +224,7 @@
         <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-black text-gray-900">New Transaction</h3>
-            <button @click="showAddModal = false" class="p-2 text-gray-400 hover:text-gray-600">
+            <button @click="showAddModal = false" class="p-2 text-gray-400 hover:text-gray-600" aria-label="Close modal">
               <XIcon class="w-6 h-6" />
             </button>
           </div>
@@ -235,6 +238,8 @@
                   newTransaction.type === 'expense' ? 'bg-red-500 text-white shadow-lg shadow-red-200' : 'bg-gray-50 text-gray-500',
                   'py-3 rounded-2xl text-sm font-bold transition-all'
                 ]"
+                role="radio"
+                :aria-checked="newTransaction.type === 'expense'"
               >
                 Expense
               </button>
@@ -245,6 +250,8 @@
                   newTransaction.type === 'income' ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-gray-50 text-gray-500',
                   'py-3 rounded-2xl text-sm font-bold transition-all'
                 ]"
+                role="radio"
+                :aria-checked="newTransaction.type === 'income'"
               >
                 Income
               </button>

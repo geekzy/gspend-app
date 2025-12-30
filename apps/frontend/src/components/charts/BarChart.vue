@@ -1,6 +1,6 @@
 <template>
-  <div class="relative">
-    <canvas ref="chartCanvas" :width="width" :height="height"></canvas>
+  <div class="relative w-full" :style="{ height: height + 'px' }">
+    <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
 

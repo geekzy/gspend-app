@@ -41,6 +41,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/stores/auth'
+import { getOperationError } from '@/utils/errorHandling'
 
 const name = ref('')
 const email = ref('')
@@ -65,7 +66,13 @@ const handleRegister = async () => {
     router.push('/')
   } catch (err: any) {
     console.error('Registration failed:', err)
-    error.value = err.response?.data?.error || 'Failed to create account. Please try again.'
+    const friendlyError = getOperationError('auth', 'register', err)
+    error.value = friendlyError.message
+    
+    // Add suggestion if available
+    if (friendlyError.suggestion) {
+      error.value += ` ${friendlyError.suggestion}`
+    }
   } finally {
     isLoading.value = false
   }

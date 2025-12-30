@@ -48,7 +48,7 @@
                 <p class="text-xs text-gray-500 truncate">{{ authStore.user?.email || '' }}</p>
               </div>
             </router-link>
-            <button @click="logout" class="ml-2 p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors">
+            <button @click="logout" class="ml-2 p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors" aria-label="Sign out">
               <LogOutIcon class="h-5 w-5" />
             </button>
           </div>
@@ -66,7 +66,7 @@
           </div>
           <span class="font-bold text-gray-900">gSpend</span>
         </div>
-        <button @click="logout" class="text-gray-400">
+        <button @click="logout" class="text-gray-400" aria-label="Sign out">
            <LogOutIcon class="h-6 w-6" />
         </button>
       </header>

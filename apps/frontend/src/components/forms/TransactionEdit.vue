@@ -3,7 +3,7 @@
     <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-black text-gray-900">Edit Transaction</h3>
-        <button @click="$emit('close')" class="p-2 text-gray-400 hover:text-gray-600">
+        <button @click="$emit('close')" class="p-2 text-gray-400 hover:text-gray-600" aria-label="Close modal">
           <XIcon class="w-6 h-6" />
         </button>
       </div>
@@ -29,6 +29,8 @@
               editForm.type === 'expense' ? 'bg-red-500 text-white shadow-lg shadow-red-200' : 'bg-gray-50 text-gray-500',
               'py-3 rounded-2xl text-sm font-bold transition-all'
             ]"
+            role="radio"
+            :aria-checked="editForm.type === 'expense'"
           >
             Expense
           </button>
@@ -39,6 +41,8 @@
               editForm.type === 'income' ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-gray-50 text-gray-500',
               'py-3 rounded-2xl text-sm font-bold transition-all'
             ]"
+            role="radio"
+            :aria-checked="editForm.type === 'income'"
           >
             Income
           </button>
@@ -56,8 +60,10 @@
             placeholder="What was this for?" 
             required 
             @blur="handleFieldBlur('description')"
+            :aria-invalid="hasFieldError('description')"
+            :aria-describedby="hasFieldError('description') ? 'error-description' : undefined"
           />
-          <p v-if="hasFieldError('description')" class="mt-1 text-xs text-red-500">{{ getFieldError('description') }}</p>
+          <p v-if="hasFieldError('description')" id="error-description" class="mt-1 text-xs text-red-500">{{ getFieldError('description') }}</p>
         </div>
 
         <!-- Amount and Date -->
@@ -77,9 +83,11 @@
                 placeholder="0.00" 
                 required 
                 @blur="handleFieldBlur('amount')"
+                :aria-invalid="hasFieldError('amount')"
+                :aria-describedby="hasFieldError('amount') ? 'error-amount' : undefined"
               />
             </div>
-            <p v-if="hasFieldError('amount')" class="mt-1 text-xs text-red-500">{{ getFieldError('amount') }}</p>
+            <p v-if="hasFieldError('amount')" id="error-amount" class="mt-1 text-xs text-red-500">{{ getFieldError('amount') }}</p>
           </div>
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
@@ -91,8 +99,10 @@
               :class="getFieldClass('transactionDate', 'w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none', 'border-red-300 bg-red-50')"
               required 
               @blur="handleFieldBlur('transactionDate')"
+              :aria-invalid="hasFieldError('transactionDate')"
+              :aria-describedby="hasFieldError('transactionDate') ? 'error-date' : undefined"
             />
-            <p v-if="hasFieldError('transactionDate')" class="mt-1 text-xs text-red-500">{{ getFieldError('transactionDate') }}</p>
+            <p v-if="hasFieldError('transactionDate')" id="error-date" class="mt-1 text-xs text-red-500">{{ getFieldError('transactionDate') }}</p>
           </div>
         </div>
 
@@ -107,13 +117,15 @@
               :class="getFieldClass('categoryId', 'w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none bg-white', 'border-red-300 bg-red-50')"
               required
               @blur="handleFieldBlur('categoryId')"
+              :aria-invalid="hasFieldError('categoryId')"
+              :aria-describedby="hasFieldError('categoryId') ? 'error-category' : undefined"
             >
               <option value="">Select Category</option>
               <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">
                 {{ cat.icon }} {{ cat.name }}
               </option>
             </select>
-            <p v-if="hasFieldError('categoryId')" class="mt-1 text-xs text-red-500">{{ getFieldError('categoryId') }}</p>
+            <p v-if="hasFieldError('categoryId')" id="error-category" class="mt-1 text-xs text-red-500">{{ getFieldError('categoryId') }}</p>
           </div>
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Payment Method</label>

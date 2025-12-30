@@ -1,6 +1,8 @@
 <template>
-  <div class="relative">
-    <canvas ref="chartCanvas" :width="width" :height="height"></canvas>
+  <div class="relative w-full" :style="{ maxHeight: height + 'px' }">
+    <div class="relative w-full aspect-square mx-auto">
+      <canvas ref="chartCanvas"></canvas>
+    </div>
     <div v-if="showLegend" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
       <div 
         v-for="(item, index) in data" 

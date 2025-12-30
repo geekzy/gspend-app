@@ -301,6 +301,20 @@ export const operationMessages = {
         }
     },
 
+    // Auth operations
+    auth: {
+        login: {
+            success: 'Welcome back!',
+            error: 'Login failed',
+            suggestion: 'Please check your email and password and try again.'
+        },
+        register: {
+            success: 'Account created successfully',
+            error: 'Registration failed',
+            suggestion: 'Please check that your email is unique and password meets requirements.'
+        }
+    },
+
     // Profile operations
     profile: {
         update: {

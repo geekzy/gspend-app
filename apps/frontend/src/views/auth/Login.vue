@@ -111,6 +111,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/stores/auth'
+import { getOperationError } from '@/utils/errorHandling'
 
 const email = ref('')
 const password = ref('')
@@ -133,7 +134,13 @@ const handleLogin = async () => {
     router.push('/')
   } catch (err: any) {
     console.error('Login failed:', err)
-    error.value = err.response?.data?.error || 'Failed to sign in. Please check your credentials.'
+    const friendlyError = getOperationError('auth', 'login', err)
+    error.value = friendlyError.message
+    
+    // Add suggestion if available
+    if (friendlyError.suggestion) {
+      error.value += ` ${friendlyError.suggestion}`
+    }
   } finally {
     isLoading.value = false
   }

@@ -7,6 +7,7 @@
           <button 
             @click="goBack"
             class="mr-4 p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-all"
+            aria-label="Go back"
           >
             <ArrowLeftIcon class="w-5 h-5" />
           </button>
@@ -67,8 +68,10 @@
               ]"
               placeholder="Enter your family name" 
               required 
+              :aria-invalid="!!fieldErrors.fullName"
+              :aria-describedby="fieldErrors.fullName ? 'error-fullName' : undefined"
             />
-            <p v-if="fieldErrors.fullName" class="mt-1 text-xs text-red-500">{{ fieldErrors.fullName }}</p>
+            <p v-if="fieldErrors.fullName" id="error-fullName" class="mt-1 text-xs text-red-500">{{ fieldErrors.fullName }}</p>
             <p class="mt-1 text-xs text-gray-500">This will be displayed as your family account name</p>
           </div>
 
@@ -86,8 +89,10 @@
               ]"
               placeholder="Enter your email address" 
               required 
+              :aria-invalid="!!fieldErrors.email"
+              :aria-describedby="fieldErrors.email ? 'error-email' : undefined"
             />
-            <p v-if="fieldErrors.email" class="mt-1 text-xs text-red-500">{{ fieldErrors.email }}</p>
+            <p v-if="fieldErrors.email" id="error-email" class="mt-1 text-xs text-red-500">{{ fieldErrors.email }}</p>
             <p class="mt-1 text-xs text-gray-500">Used for account login and notifications</p>
           </div>
 
@@ -108,6 +113,9 @@
                     ? 'bg-primary-500 text-white border-primary-500 shadow-lg shadow-primary-200' 
                     : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                 ]"
+                role="radio"
+                :aria-checked="editForm.familySize === size.value"
+                :aria-label="size.label + (size.value === 1 ? ' child' : ' children')"
               >
                 {{ size.label }}
               </button>

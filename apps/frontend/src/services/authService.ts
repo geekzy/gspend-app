@@ -43,7 +43,7 @@ export const authService = {
     async login(credentials: any): Promise<LoginResponse> {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.AUTH_LOGIN, async () => {
-            const response = await authApi.post('/login', credentials)
+            const response = await authApi.post('/login', credentials, { skipGlobalErrorHandler: true } as any)
             return response.data
         })
     },
@@ -51,7 +51,7 @@ export const authService = {
     async register(userData: any): Promise<LoginResponse> {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.AUTH_REGISTER, async () => {
-            const response = await authApi.post('/register', userData)
+            const response = await authApi.post('/register', userData, { skipGlobalErrorHandler: true } as any)
             return response.data
         })
     },
