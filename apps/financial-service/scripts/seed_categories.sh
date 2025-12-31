@@ -10,8 +10,8 @@ echo "Starting category seeding for database: $MONGODB_DATABASE"
 # Run the seeding logic using mongosh
 mongosh "$MONGODB_URI/$MONGODB_DATABASE" --quiet --eval '
 try {
-    const db = db.getSiblingDB("'$MONGODB_DATABASE'");
-    const collection = db.getCollection("categories");
+    const targetDb = db.getSiblingDB("'$MONGODB_DATABASE'");
+    const collection = targetDb.getCollection("categories");
 
     // Check if system categories already exist
     const count = collection.countDocuments({ isSystem: true });

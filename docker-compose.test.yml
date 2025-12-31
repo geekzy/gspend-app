@@ -44,7 +44,7 @@ services:
     networks:
       - gspend-test-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/api/v1/auth/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/api/v1/auth/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -74,11 +74,10 @@ services:
     networks:
       - gspend-test-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/api/v1/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/api/v1/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
-
   # Test runner container - DISABLED FOR NOW
   # Functional tests will be re-enabled after completing implementation tasks
   # test-runner:
@@ -104,6 +103,8 @@ services:
 volumes:
   mongodb_test_data:
 
+
 networks:
   gspend-test-network:
+    name: gspend-test-network
     driver: bridge

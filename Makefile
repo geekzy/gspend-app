@@ -62,7 +62,7 @@ generate:
 .PHONY: docker-up
 docker-up:
 	@echo "Starting gSpend development environment..."
-	docker-compose -f devops/docker/docker-compose.yml up --build -d
+	docker compose -f devops/docker/docker-compose.yml up --build -d
 	@echo "Waiting for services to be healthy..."
 	@sleep 10
 	@$(MAKE) docker-status
@@ -70,7 +70,7 @@ docker-up:
 .PHONY: docker-down
 docker-down:
 	@echo "Stopping gSpend development environment..."
-	docker-compose -f devops/docker/docker-compose.yml down
+	docker compose -f devops/docker/docker-compose.yml down
 
 # =============================================================================
 # Demo Environment with Dummy Data
@@ -86,9 +86,9 @@ demo-start:
 		exit 1; \
 	fi
 	@echo "🧹 Cleaning up existing containers..."
-	@docker-compose -f docker-compose.demo.yml down -v > /dev/null 2>&1 || true
+	@docker compose -f docker-compose.demo.yml down -v > /dev/null 2>&1 || true
 	@echo "🔨 Building and starting services..."
-	@docker-compose -f docker-compose.demo.yml up --build -d
+	@docker compose -f docker-compose.demo.yml up --build -d
 	@echo "⏳ Waiting for services to be ready..."
 	@echo "This may take a few minutes on first run..."
 	@$(MAKE) demo-wait-for-services
@@ -117,7 +117,7 @@ demo-start:
 .PHONY: demo-stop
 demo-stop:
 	@echo "🛑 Stopping GSpend Demo Environment..."
-	@docker-compose -f docker-compose.demo.yml down
+	@docker compose -f docker-compose.demo.yml down
 	@echo "✅ Demo environment stopped."
 	@echo ""
 	@echo "💡 To completely remove demo data:"
@@ -132,31 +132,31 @@ demo-restart: demo-stop demo-start
 .PHONY: demo-clean
 demo-clean:
 	@echo "🧹 Cleaning up demo environment and data..."
-	@docker-compose -f docker-compose.demo.yml down -v
+	@docker compose -f docker-compose.demo.yml down -v
 	@docker system prune -f
 	@echo "✅ Demo environment and data cleaned."
 
 .PHONY: demo-logs
 demo-logs:
 	@echo "=== Demo Environment Logs ==="
-	@docker-compose -f docker-compose.demo.yml logs --tail=50
+	@docker compose -f docker-compose.demo.yml logs --tail=50
 
 .PHONY: demo-logs-follow
 demo-logs-follow:
 	@echo "=== Following Demo Environment Logs ==="
-	@docker-compose -f docker-compose.demo.yml logs -f
+	@docker compose -f docker-compose.demo.yml logs -f
 
 .PHONY: demo-status
 demo-status:
 	@echo "=== Demo Environment Status ==="
-	@docker-compose -f docker-compose.demo.yml ps
+	@docker compose -f docker-compose.demo.yml ps
 
 .PHONY: demo-wait-for-services
 demo-wait-for-services:
 	@echo "⏳ Checking Auth Service..."
 	@timeout=300; \
 	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost:8081/api/v1/auth/health > /dev/null 2>&1; then \
+		if curl -s -f http://localhost:9001/api/v1/auth/health > /dev/null 2>&1; then \
 			echo "✅ Auth Service is ready"; \
 			break; \
 		fi; \
@@ -166,7 +166,7 @@ demo-wait-for-services:
 	@echo "⏳ Checking Financial Service..."
 	@timeout=300; \
 	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost:8082/api/v1/health > /dev/null 2>&1; then \
+		if curl -s -f http://localhost:9002/api/v1/health > /dev/null 2>&1; then \
 			echo "✅ Financial Service is ready"; \
 			break; \
 		fi; \
@@ -176,7 +176,7 @@ demo-wait-for-services:
 	@echo "⏳ Checking Frontend..."
 	@timeout=300; \
 	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost/ > /dev/null 2>&1; then \
+		if curl -s -f http://localhost:9000/ > /dev/null 2>&1; then \
 			echo "✅ Frontend is ready"; \
 			break; \
 		fi; \
@@ -190,32 +190,32 @@ docker-restart: docker-down docker-up
 .PHONY: docker-status
 docker-status:
 	@echo "=== Docker Container Status ==="
-	@docker-compose -f devops/docker/docker-compose.yml ps
+	@docker compose -f devops/docker/docker-compose.yml ps
 
 .PHONY: docker-logs
 docker-logs:
 	@echo "=== All Service Logs ==="
-	docker-compose -f devops/docker/docker-compose.yml logs --tail=50
+	docker compose -f devops/docker/docker-compose.yml logs --tail=50
 
 .PHONY: docker-logs-auth
 docker-logs-auth:
 	@echo "=== Auth Service Logs ==="
-	docker-compose -f devops/docker/docker-compose.yml logs auth-service --tail=50 -f
+	docker compose -f devops/docker/docker-compose.yml logs auth-service --tail=50 -f
 
 .PHONY: docker-logs-finance
 docker-logs-finance:
 	@echo "=== Financial Service Logs ==="
-	docker-compose -f devops/docker/docker-compose.yml logs financial-service --tail=50 -f
+	docker compose -f devops/docker/docker-compose.yml logs financial-service --tail=50 -f
 
 .PHONY: docker-logs-frontend
 docker-logs-frontend:
 	@echo "=== Frontend Logs ==="
-	docker-compose -f devops/docker/docker-compose.yml logs frontend --tail=50 -f
+	docker compose -f devops/docker/docker-compose.yml logs frontend --tail=50 -f
 
 .PHONY: docker-clean
 docker-clean:
 	@echo "Cleaning up Docker resources..."
-	docker-compose -f devops/docker/docker-compose.yml down -v
+	docker compose -f devops/docker/docker-compose.yml down -v
 	docker system prune -f
 	@echo "Docker cleanup complete"
 
@@ -233,7 +233,7 @@ db-reset:
 	@echo "Resetting database (WARNING: This will delete all data)..."
 	@read -p "Are you sure? [y/N] " -n 1 -r; \
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
-		docker-compose -f devops/docker/docker-compose.yml exec mongodb mongosh gspend --eval "db.dropDatabase()"; \
+		docker compose -f devops/docker/docker-compose.yml exec mongodb mongosh gspend --eval "db.dropDatabase()"; \
 		echo "Database reset complete"; \
 	else \
 		echo "Database reset cancelled"; \
@@ -242,7 +242,7 @@ db-reset:
 .PHONY: db-shell
 db-shell:
 	@echo "Opening MongoDB shell..."
-	docker-compose -f devops/docker/docker-compose.yml exec mongodb mongosh gspend
+	docker compose -f devops/docker/docker-compose.yml exec mongodb mongosh gspend
 
 # =============================================================================
 # Local Development
@@ -309,9 +309,9 @@ health-check:
 test-integration:
 	@echo "🧪 Running Integration Tests..."
 	@echo "Setting up test environment..."
-	@docker-compose -f docker-compose.test.yml down --volumes --remove-orphans > /dev/null 2>&1 || true
-	@docker-compose -f docker-compose.test.yml build
-	@docker-compose -f docker-compose.test.yml up -d mongodb-test redis-test auth-service-test financial-service-test
+	@docker compose -f docker-compose.test.yml down --volumes --remove-orphans > /dev/null 2>&1 || true
+	@docker compose -f docker-compose.test.yml build
+	@docker compose -f docker-compose.test.yml up -d mongodb-test redis-test auth-service-test financial-service-test
 	@echo "⏳ Waiting for services to be healthy..."
 	@$(MAKE) test-wait-for-services
 	@echo "🚀 Running integration test suite..."
@@ -321,7 +321,7 @@ test-integration:
 		-e MONGODB_URI=mongodb://mongodb-test:27017 \
 		-e MONGODB_DATABASE=gspend_test \
 		-v $(PWD)/test-results:/app/test-results \
-		$$(docker build -q -f Dockerfile.test .); then \
+		$$(DOCKER_BUILDKIT=0 docker build -q -f Dockerfile.test .); then \
 		echo "✅ Integration tests PASSED"; \
 	else \
 		echo "❌ Integration tests FAILED"; \
@@ -329,7 +329,7 @@ test-integration:
 		exit 1; \
 	fi
 	@$(MAKE) test-show-results
-	@docker-compose -f docker-compose.test.yml down --volumes
+	@docker compose -f docker-compose.test.yml down --volumes
 
 .PHONY: test-integration-quick
 test-integration-quick:
@@ -351,16 +351,16 @@ test-integration-quick:
 .PHONY: test-integration-setup
 test-integration-setup:
 	@echo "🔧 Setting up integration test environment..."
-	@docker-compose -f docker-compose.test.yml down --volumes --remove-orphans > /dev/null 2>&1 || true
-	@docker-compose -f docker-compose.test.yml build
-	@docker-compose -f docker-compose.test.yml up -d mongodb-test redis-test auth-service-test financial-service-test
+	@docker compose -f docker-compose.test.yml down --volumes --remove-orphans > /dev/null 2>&1 || true
+	@docker compose -f docker-compose.test.yml build
+	@docker compose -f docker-compose.test.yml up -d mongodb-test redis-test auth-service-test financial-service-test
 	@$(MAKE) test-wait-for-services
 	@echo "✅ Integration test environment ready"
 
 .PHONY: test-integration-teardown
 test-integration-teardown:
 	@echo "🧹 Tearing down integration test environment..."
-	@docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
+	@docker compose -f docker-compose.test.yml down --volumes --remove-orphans
 	@echo "✅ Integration test environment cleaned up"
 
 .PHONY: test-wait-for-services
@@ -404,12 +404,12 @@ test-show-results:
 .PHONY: test-integration-logs
 test-integration-logs:
 	@echo "=== Integration Test Environment Logs ==="
-	@docker-compose -f docker-compose.test.yml logs --tail=50
+	@docker compose -f docker-compose.test.yml logs --tail=50
 
 .PHONY: test-integration-logs-follow
 test-integration-logs-follow:
 	@echo "=== Following Integration Test Environment Logs ==="
-	@docker-compose -f docker-compose.test.yml logs -f
+	@docker compose -f docker-compose.test.yml logs -f
 
 .PHONY: test-integration-local
 test-integration-local: docker-up
@@ -428,7 +428,7 @@ test-e2e: docker-up
 .PHONY: test-clean
 test-clean:
 	@echo "Cleaning up test environment..."
-	docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
+	docker compose -f docker-compose.test.yml down --volumes --remove-orphans
 	docker system prune -f --volumes
 
 # =============================================================================

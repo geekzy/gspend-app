@@ -16,7 +16,8 @@ pkg/
 apps/auth-service/server
 apps/financial-service/server
 *.exe
-*.test
+*.bin.test
+!Dockerfile.test
 *.prof
 coverage.out
 *.out
