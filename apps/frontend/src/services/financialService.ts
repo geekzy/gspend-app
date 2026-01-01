@@ -158,6 +158,10 @@ export const financialService = {
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.CATEGORIES_LIST, async () => {
             const params = type ? { type } : {}
             const response = await financeApi.get('/categories', { params })
+            // Handle wrapped response
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
@@ -222,6 +226,9 @@ export const financialService = {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.BUDGETS_LIST, async () => {
             const response = await financeApi.get('/budgets')
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
@@ -231,6 +238,9 @@ export const financialService = {
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.BUDGET_ACTIVE, async () => {
             const params = date ? { date } : {}
             const response = await financeApi.get('/budgets/active', { params })
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
@@ -263,6 +273,9 @@ export const financialService = {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.TRANSACTIONS_LIST, async () => {
             const response = await financeApi.get('/transactions', { params: filter })
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
@@ -296,6 +309,9 @@ export const financialService = {
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.REPORT_BUDGET_VS_ACTUAL, async () => {
             const params = month ? { month } : {}
             const response = await financeApi.get('/reports/budget-vs-actual', { params })
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
@@ -307,6 +323,9 @@ export const financialService = {
             if (startDate) params.startDate = startDate
             if (endDate) params.endDate = endDate
             const response = await financeApi.get('/reports/spending-by-category', { params })
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     },
@@ -316,6 +335,9 @@ export const financialService = {
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.REPORT_MONTHLY_TRENDS, async () => {
             const params = months ? { months } : {}
             const response = await financeApi.get('/reports/monthly-trends', { params })
+            if (response.data && response.data.success && response.data.data) {
+                return response.data.data
+            }
             return response.data
         })
     }

@@ -156,7 +156,7 @@ demo-wait-for-services:
 	@echo "⏳ Checking Auth Service..."
 	@timeout=300; \
 	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost:9001/api/v1/auth/health > /dev/null 2>&1; then \
+		if curl -s -f http://localhost:8081/api/v1/auth/health > /dev/null 2>&1; then \
 			echo "✅ Auth Service is ready"; \
 			break; \
 		fi; \
@@ -166,7 +166,7 @@ demo-wait-for-services:
 	@echo "⏳ Checking Financial Service..."
 	@timeout=300; \
 	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost:9002/api/v1/health > /dev/null 2>&1; then \
+		if curl -s -f http://localhost:8082/api/v1/health > /dev/null 2>&1; then \
 			echo "✅ Financial Service is ready"; \
 			break; \
 		fi; \
@@ -176,7 +176,7 @@ demo-wait-for-services:
 	@echo "⏳ Checking Frontend..."
 	@timeout=300; \
 	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost:9000/ > /dev/null 2>&1; then \
+		if curl -s -f http://localhost/ > /dev/null 2>&1; then \
 			echo "✅ Frontend is ready"; \
 			break; \
 		fi; \

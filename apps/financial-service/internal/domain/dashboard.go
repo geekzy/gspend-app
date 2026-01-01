@@ -9,26 +9,26 @@ import (
 
 // DashboardSummary represents the main dashboard data
 type DashboardSummary struct {
-	TotalBalance       float64                `json:"total_balance"`
-	MonthlyIncome      float64                `json:"monthly_income"`
-	MonthlyExpenses    float64                `json:"monthly_expenses"`
-	BudgetProgress     *BudgetProgress        `json:"budget_progress"`
-	TopCategories      []*CategorySpending    `json:"top_categories"`
-	RecentTransactions []*Transaction         `json:"recent_transactions"`
+	TotalBalance       float64                `json:"totalBalance"`
+	MonthlyIncome      float64                `json:"monthlyIncome"`
+	MonthlyExpenses    float64                `json:"monthlyExpenses"`
+	BudgetProgress     *BudgetProgress        `json:"budgetProgress"`
+	TopCategories      []*CategorySpending    `json:"topCategories"`
+	RecentTransactions []*Transaction         `json:"recentTransactions"`
 }
 
 // BudgetProgress represents budget vs spending progress
 type BudgetProgress struct {
-	TotalBudget     float64 `json:"total_budget"`
-	TotalSpent      float64 `json:"total_spent"`
-	RemainingBudget float64 `json:"remaining_budget"`
-	PercentageUsed  float64 `json:"percentage_used"`
+	TotalBudget     float64 `json:"totalBudget"`
+	TotalSpent      float64 `json:"totalSpent"`
+	RemainingBudget float64 `json:"remainingBudget"`
+	PercentageUsed  float64 `json:"percentageUsed"`
 }
 
 // CategorySpending represents spending by category
 type CategorySpending struct {
-	CategoryID   primitive.ObjectID `json:"category_id"`
-	CategoryName string             `json:"category_name"`
+	CategoryID   primitive.ObjectID `json:"categoryId"`
+	CategoryName string             `json:"categoryName"`
 	Amount       float64            `json:"amount"`
 	Percentage   float64            `json:"percentage"`
 }
@@ -41,29 +41,29 @@ type MonthlySpending struct {
 
 // TransactionFilters represents filtering options for transactions
 type TransactionFilters struct {
-	StartDate *time.Time `json:"start_date"`
-	EndDate   *time.Time `json:"end_date"`
-	CategoryID *primitive.ObjectID `json:"category_id"`
+	StartDate *time.Time `json:"startDate"`
+	EndDate   *time.Time `json:"endDate"`
+	CategoryID *primitive.ObjectID `json:"categoryId"`
 	Type      *TransactionType `json:"type"`
 	Page      int        `json:"page"`
-	PerPage   int        `json:"per_page"`
-	SortBy    string     `json:"sort_by"`    // "transaction_date" or "amount"
-	SortOrder string     `json:"sort_order"` // "asc" or "desc"
+	PerPage   int        `json:"perPage"`
+	SortBy    string     `json:"sortBy"`    // "transaction_date" or "amount"
+	SortOrder string     `json:"sortOrder"` // "asc" or "desc"
 }
 
 // PaginatedTransactions represents paginated transaction results
 type PaginatedTransactions struct {
 	Transactions []*Transaction `json:"transactions"`
 	Pagination   Pagination     `json:"pagination"`
-	FiltersApplied TransactionFilters `json:"filters_applied"`
+	FiltersApplied TransactionFilters `json:"filtersApplied"`
 }
 
 // Pagination represents pagination metadata
 type Pagination struct {
 	Page       int `json:"page"`
-	PerPage    int `json:"per_page"`
+	PerPage    int `json:"perPage"`
 	Total      int `json:"total"`
-	TotalPages int `json:"total_pages"`
+	TotalPages int `json:"totalPages"`
 }
 
 // DashboardRepository defines methods for dashboard data aggregation
