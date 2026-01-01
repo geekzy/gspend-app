@@ -474,7 +474,7 @@ db.transactions.createIndex({
 ## Monorepo Structure
 
 ```
-family-finance-app/
+gspend-app/
 ├── .github/
 │   └── workflows/
 │       ├── ci-frontend.yml
@@ -541,36 +541,35 @@ family-finance-app/
 │   │   │   │       ├── SpendingChart.vue
 │   │   │   │       └── TrendChart.vue
 │   │   │   ├── composables/
-│   │   │   │   ├── useAuth.js
-│   │   │   │   ├── useApi.js
-│   │   │   │   ├── useFilter.js
-│   │   │   │   └── useToast.js
+│   │   │   │   ├── useAuth.ts
+│   │   │   │   ├── useApi.ts
+│   │   │   │   ├── useFilter.ts
+│   │   │   │   └── useToast.ts
 │   │   │   ├── layouts/
 │   │   │   │   ├── AuthLayout.vue
 │   │   │   │   ├── MainLayout.vue
 │   │   │   │   └── EmptyLayout.vue
 │   │   │   ├── router/
-│   │   │   │   ├── index.js
-│   │   │   │   └── guards.js
+│   │   │   │   └── index.ts
 │   │   │   ├── stores/
-│   │   │   │   ├── auth.js
-│   │   │   │   ├── income.js
-│   │   │   │   ├── budget.js
-│   │   │   │   ├── transaction.js
-│   │   │   │   ├── category.js
-│   │   │   │   └── dashboard.js
+│   │   │   │   ├── auth.ts
+│   │   │   │   ├── income.ts
+│   │   │   │   ├── budget.ts
+│   │   │   │   ├── transaction.ts
+│   │   │   │   ├── category.ts
+│   │   │   │   └── dashboard.ts
 │   │   │   ├── services/
-│   │   │   │   ├── api.js
-│   │   │   │   ├── auth.service.js
-│   │   │   │   ├── income.service.js
-│   │   │   │   ├── budget.service.js
-│   │   │   │   ├── transaction.service.js
-│   │   │   │   └── category.service.js
+│   │   │   │   ├── api.ts
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   ├── income.service.ts
+│   │   │   │   ├── budget.service.ts
+│   │   │   │   ├── transaction.service.ts
+│   │   │   │   └── category.service.ts
 │   │   │   ├── utils/
-│   │   │   │   ├── formatters.js
-│   │   │   │   ├── validators.js
-│   │   │   │   ├── constants.js
-│   │   │   │   └── helpers.js
+│   │   │   │   ├── formatters.ts
+│   │   │   │   ├── validators.ts
+│   │   │   │   ├── constants.ts
+│   │   │   │   └── helpers.ts
 │   │   │   ├── views/
 │   │   │   │   ├── auth/
 │   │   │   │   │   ├── Login.vue
@@ -598,12 +597,12 @@ family-finance-app/
 │   │   │   │       ├── SpendingByCategory.vue
 │   │   │   │       └── MonthlyTrends.vue
 │   │   │   ├── App.vue
-│   │   │   └── main.js
+│   │   │   └── main.ts
 │   │   ├── .env.development
 │   │   ├── .env.production
 │   │   ├── .gitignore
 │   │   ├── package.json
-│   │   ├── vite.config.js
+│   │   ├── vite.config.ts
 │   │   ├── tailwind.config.js
 │   │   ├── postcss.config.js
 │   │   ├── Dockerfile
@@ -640,7 +639,6 @@ family-finance-app/
 │   │   │       ├── password.go
 │   │   │       ├── response.go
 │   │   │       └── validator.go
-│   │   ├── pkg/
 │   │   │   ├── proto/
 │   │   │   │   └── auth/
 │   │   │   │       └── v1/
@@ -649,8 +647,6 @@ family-finance-app/
 │   │   │   ├── database/
 │   │   │   │   ├── mongodb.go
 │   │   │   │   └── redis.go
-│   │   │   └── logger/
-│   │   │       └── logger.go
 │   │   ├── .env.example
 │   │   ├── .gitignore
 │   │   ├── go.mod
@@ -669,7 +665,9 @@ family-finance-app/
 │       │   │   ├── income.go
 │       │   │   ├── budget.go
 │       │   │   ├── transaction.go
-│       │   │   └── category.go
+│       │   │   ├── category.go
+│       │   │   ├── dashboard.go
+│       │   │   └── report.go
 │       │   ├── repository/
 │       │   │   ├── income_repository.go
 │       │   │   ├── budget_repository.go
@@ -680,13 +678,15 @@ family-finance-app/
 │       │   │   ├── budget_service.go
 │       │   │   ├── transaction_service.go
 │       │   │   ├── category_service.go
-│       │   │   └── dashboard_service.go
+│       │   │   ├── dashboard_service.go
+│       │   │   └── report_service.go
 │       │   ├── handler/
 │       │   │   ├── income_handler.go
 │       │   │   ├── budget_handler.go
 │       │   │   ├── transaction_handler.go
 │       │   │   ├── category_handler.go
-│       │   │   └── dashboard_handler.go
+│       │   │   ├── dashboard_handler.go
+│       │   │   └── report_handler.go
 │       │   ├── middleware/
 │       │   │   ├── auth.go
 │       │   │   ├── cors.go
@@ -770,10 +770,14 @@ family-finance-app/
 │   │   ├── local-setup.md
 │   │   ├── docker-deployment.md
 │   │   └── kubernetes-deployment.md
-│   └── development/
-│       ├── contributing.md
-│       ├── coding-standards.md
-│       └── testing-guide.md
+│   ├── development/
+│   │   ├── contributing.md
+│   │   ├── coding-standards.md
+│   │   └── testing-guide.md
+│   ├── architecture-design.md
+│   ├── grpc-implementation-guide.md
+│   ├── requirements.md
+│   └── tasks.md
 │
 ├── .gitignore
 ├── .editorconfig
@@ -820,7 +824,7 @@ services:
       - "${AUTH_SERVICE_PORT:-8081}:8081"
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
-      - MONGODB_DATABASE=family_finance
+      - MONGODB_DATABASE=gspend
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
@@ -833,7 +837,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - family-finance-net
+      - gspend-net
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/api/v1/auth/health"]
@@ -851,7 +855,7 @@ services:
       - "${FINANCIAL_SERVICE_PORT:-8082}:8082"
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
-      - MONGODB_DATABASE=family_finance
+      - MONGODB_DATABASE=gspend
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
@@ -864,7 +868,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - family-finance-net
+      - gspend-net
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/api/v1/health"]
@@ -892,7 +896,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - family-finance-net
+      - gspend-net
     restart: unless-stopped
 
   # Redis Cache
@@ -910,7 +914,7 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - family-finance-net
+      - gspend-net
     restart: unless-stopped
 
   # Nginx Reverse Proxy
@@ -927,11 +931,11 @@ services:
       - auth-service
       - financial-service
     networks:
-      - family-finance-net
+      - gspend-net
     restart: unless-stopped
 
 networks:
-  family-finance-net:
+  gspend-net:
     driver: bridge
 
 volumes:

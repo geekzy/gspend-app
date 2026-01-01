@@ -18,7 +18,7 @@ syntax = "proto3";
 
 package auth.v1;
 
-option go_package = "github.com/yourorg/family-finance-app/pkg/proto/auth/v1;authv1";
+option go_package = "github.com/geekzy/gspend-app/internal/proto/auth/v1;authv1";
 
 import "google/protobuf/timestamp.proto";
 
@@ -85,8 +85,8 @@ package grpc
 
 import (
     "context"
-    authv1 "github.com/yourorg/family-finance-app/pkg/proto/auth/v1"
-    "github.com/yourorg/family-finance-app/apps/auth-service/internal/service"
+    authv1 "github.com/geekzy/gspend-app/pkg/proto/auth/v1"
+    "github.com/geekzy/gspend-app/apps/auth-service/internal/service"
 )
 
 type AuthGRPCService struct {
@@ -155,7 +155,7 @@ import (
     "net"
     
     "google.golang.org/grpc"
-    authv1 "github.com/yourorg/family-finance-app/pkg/proto/auth/v1"
+    authv1 "github.com/geekzy/gspend-app/pkg/proto/auth/v1"
 )
 
 type GRPCServer struct {
@@ -198,7 +198,7 @@ import (
     "context"
     "time"
     
-    authv1 "github.com/yourorg/family-finance-app/pkg/proto/auth/v1"
+    authv1 "github.com/geekzy/gspend-app/pkg/proto/auth/v1"
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
 )
@@ -259,15 +259,15 @@ func (c *AuthGRPCClient) Close() error {
 .PHONY: generate
 generate:
 \t@echo "Generating Protocol Buffer code..."
-\tprotoc --go_out=../apps/auth-service/pkg/proto \\
+\tprotoc --go_out=../apps/auth-service/internal/proto \\
 \t       --go_opt=paths=source_relative \\
-\t       --go-grpc_out=../apps/auth-service/pkg/proto \\
+\t       --go-grpc_out=../apps/auth-service/internal/proto \\
 \t       --go-grpc_opt=paths=source_relative \\
 \t       auth/v1/*.proto
 \t
-\tprotoc --go_out=../apps/financial-service/pkg/proto \\
+\tprotoc --go_out=../apps/financial-service/internal/proto \\
 \t       --go_opt=paths=source_relative \\
-\t       --go-grpc_out=../apps/financial-service/pkg/proto \\
+\t       --go-grpc_out=../apps/financial-service/internal/proto \\
 \t       --go-grpc_opt=paths=source_relative \\
 \t       auth/v1/*.proto
 \t@echo "Done!"
