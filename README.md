@@ -58,6 +58,11 @@ make demo-start
 - **Includes**: 3 months of transactions, budgets, and dashboard analytics
 - **See**: [DEMO.md](DEMO.md) for full details
 
+### Configuration
+Services use a hierarchical configuration system:
+1.  **`config.yaml`**: Main configuration file (e.g., `apps/auth-service/config.yaml`).
+2.  **Environment Variables**: Override `config.yaml` values using a mapping (e.g., `SMTP_USER` overrides `smtp.user`).
+
 ### Available Commands
 ```bash
 make help                    # Show all available commands

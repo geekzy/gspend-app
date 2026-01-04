@@ -78,5 +78,27 @@ export const authService = {
             const response = await authApi.put('/change-password', passwordData)
             return response.data
         })
+    },
+
+    // Password reset methods
+    async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+        const response = await authApi.post('/forgot-password', { email }, { skipGlobalErrorHandler: true } as any)
+        return response.data
+    },
+
+    async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+        const response = await authApi.post('/reset-password', { token, newPassword }, { skipGlobalErrorHandler: true } as any)
+        return response.data
+    },
+
+    // Email verification methods
+    async verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
+        const response = await authApi.post('/verify-email', { token }, { skipGlobalErrorHandler: true } as any)
+        return response.data
+    },
+
+    async resendVerification(email: string): Promise<{ success: boolean; message: string }> {
+        const response = await authApi.post('/resend-verification', { email }, { skipGlobalErrorHandler: true } as any)
+        return response.data
     }
 }

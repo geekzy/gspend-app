@@ -95,3 +95,33 @@ func (r *mongoUserRepository) Exists(ctx context.Context, email string) (bool, e
 	}
 	return count > 0, nil
 }
+
+func (r *mongoUserRepository) GetByVerificationToken(ctx context.Context, token string) (*domain.User, error) {
+	var user domain.User
+	err := r.collection.FindOne(ctx, bson.M{
+		"verificationToken": token,
+		"deletedAt":         nil,
+	}).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *mongoUserRepository) GetByResetToken(ctx context.Context, token string) (*domain.User, error) {
+	var user domain.User
+	err := r.collection.FindOne(ctx, bson.M{
+		"resetToken": token,
+		"deletedAt":  nil,
+	}).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}

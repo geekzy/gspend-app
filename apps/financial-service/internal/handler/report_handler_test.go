@@ -93,9 +93,9 @@ func TestReportHandler_GetBudgetVsActual(t *testing.T) {
 		assert.True(t, response["success"].(bool))
 		
 		data := response["data"].(map[string]interface{})
-		assert.Equal(t, 500.0, data["total_budgeted"])
-		assert.Equal(t, 450.0, data["total_spent"])
-		assert.Equal(t, -50.0, data["overall_variance"])
+		assert.Equal(t, 500.0, data["totalBudgeted"])
+		assert.Equal(t, 450.0, data["totalSpent"])
+		assert.Equal(t, -50.0, data["overallVariance"])
 
 		reportRepo.AssertExpectations(t)
 	})
@@ -191,7 +191,7 @@ func TestReportHandler_GetSpendingByCategory(t *testing.T) {
 		assert.True(t, response["success"].(bool))
 
 		data := response["data"].(map[string]interface{})
-		assert.Equal(t, 500.0, data["total_spent"])
+		assert.Equal(t, 500.0, data["totalSpent"])
 
 		reportRepo.AssertExpectations(t)
 	})
@@ -321,8 +321,8 @@ func TestReportHandler_GetMonthlyTrends(t *testing.T) {
 
 		data := response["data"].(map[string]interface{})
 		assert.Equal(t, float64(3), data["months"])
-		assert.Equal(t, 550.0, data["average_spending"])
-		assert.Equal(t, "stable", data["trend_direction"])
+		assert.Equal(t, 550.0, data["averageSpending"])
+		assert.Equal(t, "stable", data["trendDirection"])
 
 		reportRepo.AssertExpectations(t)
 	})

@@ -59,7 +59,8 @@ const handleRegister = async () => {
     const response = await authService.register({
       email: email.value,
       password: password.value,
-      fullName: name.value
+      fullName: name.value,
+      familySize: 0  // Default to 0, user can update in profile later
     })
     
     authStore.setSession(response.accessToken, response.user)

@@ -15,7 +15,9 @@ import (
 func TestAuthMiddleware(t *testing.T) {
 	e := echo.New()
 	cfg := &config.Config{
-		JWTSecret: "test-secret",
+		JWT: config.JWTConfig{
+			Secret: "test-secret",
+		},
 	}
 
 	handler := AuthMiddleware(cfg)(func(c echo.Context) error {
@@ -58,7 +60,7 @@ func TestAuthMiddleware(t *testing.T) {
 	})
 
 	t.Run("Success", func(t *testing.T) {
-		token, _ := util.GenerateToken("user-123", "test@example.com", cfg.JWTSecret, time.Hour)
+		token, _ := util.GenerateToken("user-123", "test@example.com", cfg.JWT.Secret, time.Hour)
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		req.Header.Set("Authorization", "Bearer "+token)
 		rec := httptest.NewRecorder()

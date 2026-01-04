@@ -14,6 +14,7 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder /app/server .
+COPY --from=builder /app/config.yaml .
 
 EXPOSE 8081
 EXPOSE 9091

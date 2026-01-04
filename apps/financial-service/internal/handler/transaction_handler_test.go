@@ -235,7 +235,7 @@ func TestTransactionHandler_ListWithFilters(t *testing.T) {
 		data := response["data"].(map[string]interface{})
 		pagination := data["pagination"].(map[string]interface{})
 		assert.Equal(t, float64(1), pagination["page"])
-		assert.Equal(t, float64(20), pagination["per_page"])
+		assert.Equal(t, float64(20), pagination["perPage"])
 		assert.Equal(t, float64(1), pagination["total"])
 
 		txRepo.AssertExpectations(t)
@@ -338,9 +338,9 @@ func TestTransactionHandler_ListWithFilters(t *testing.T) {
 		data := response["data"].(map[string]interface{})
 		pagination := data["pagination"].(map[string]interface{})
 		assert.Equal(t, float64(2), pagination["page"])
-		assert.Equal(t, float64(10), pagination["per_page"])
+		assert.Equal(t, float64(10), pagination["perPage"])
 		assert.Equal(t, float64(25), pagination["total"])
-		assert.Equal(t, float64(3), pagination["total_pages"])
+		assert.Equal(t, float64(3), pagination["totalPages"])
 
 		txRepo.AssertExpectations(t)
 	})

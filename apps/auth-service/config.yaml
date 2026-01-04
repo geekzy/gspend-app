@@ -1,0 +1,24 @@
+port: "8081"
+grpc_port: "9091"
+app_env: "development"
+app_url: "http://localhost"
+
+mongodb:
+  uri: "mongodb://mongodb:27017"
+  database: "gspend"
+
+redis:
+  host: "redis"
+  port: "6379"
+
+jwt:
+  secret: "gspend-secret"          
+  refresh_secret: "gspend-refresh"
+
+smtp:
+  enabled: true
+  host: "smtp.gmail.com"
+  port: 587
+  user: "user@gmail.com"     
+  password: "passw0rd" 
+  from: "user@gmail.com"     

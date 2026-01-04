@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/config"
@@ -12,14 +13,16 @@ import (
 )
 
 type AuthService struct {
-	userRepo domain.UserRepository
-	config   *config.Config
+	userRepo     domain.UserRepository
+	config       *config.Config
+	emailService *EmailService
 }
 
-func NewAuthService(userRepo domain.UserRepository, cfg *config.Config) *AuthService {
+func NewAuthService(userRepo domain.UserRepository, cfg *config.Config, emailService *EmailService) *AuthService {
 	return &AuthService{
-		userRepo: userRepo,
-		config:   cfg,
+		userRepo:     userRepo,
+		config:       cfg,
+		emailService: emailService,
 	}
 }
 
@@ -49,17 +52,34 @@ func (s *AuthService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 		return nil, err
 	}
 
+	// Generate verification token
+	verificationToken, err := GenerateToken()
+	if err != nil {
+		return nil, err
+	}
+	verificationExpiry := time.Now().Add(24 * time.Hour)
+
 	// Create user
 	user := &domain.User{
-		Email:        req.Email,
-		PasswordHash: hashedPassword,
-		FullName:     req.FullName,
-		FamilySize:   req.FamilySize,
+		Email:              req.Email,
+		PasswordHash:       hashedPassword,
+		FullName:           req.FullName,
+		FamilySize:         req.FamilySize,
+		EmailVerified:      false,
+		VerificationToken:  verificationToken,
+		VerificationExpiry: &verificationExpiry,
 	}
 
 	if err := s.userRepo.Create(ctx, user); err != nil {
 		return nil, err
 	}
+
+	// Send verification email (async, don't block registration)
+	go func() {
+		if err := s.emailService.SendVerificationEmail(user.Email, user.FullName, verificationToken); err != nil {
+			log.Printf("[AUTH] Failed to send verification email: %v", err)
+		}
+	}()
 
 	return s.generateAuthResponse(user)
 }
@@ -81,6 +101,122 @@ func (s *AuthService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Au
 	return s.generateAuthResponse(user)
 }
 
+func (s *AuthService) VerifyEmail(ctx context.Context, token string) error {
+	user, err := s.userRepo.GetByVerificationToken(ctx, token)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return errors.New("invalid verification token")
+	}
+
+	// Check if token is expired
+	if user.VerificationExpiry != nil && time.Now().After(*user.VerificationExpiry) {
+		return errors.New("verification token has expired")
+	}
+
+	// Mark email as verified
+	user.EmailVerified = true
+	user.VerificationToken = ""
+	user.VerificationExpiry = nil
+
+	return s.userRepo.Update(ctx, user)
+}
+
+func (s *AuthService) ResendVerification(ctx context.Context, email string) error {
+	user, err := s.userRepo.GetByEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+	// Don't reveal if user exists - return success anyway for security
+	if user == nil {
+		return nil
+	}
+
+	// Already verified
+	if user.EmailVerified {
+		return nil
+	}
+
+	// Generate new verification token
+	verificationToken, err := GenerateToken()
+	if err != nil {
+		return err
+	}
+	verificationExpiry := time.Now().Add(24 * time.Hour)
+
+	user.VerificationToken = verificationToken
+	user.VerificationExpiry = &verificationExpiry
+
+	if err := s.userRepo.Update(ctx, user); err != nil {
+		return err
+	}
+
+	// Send verification email
+	return s.emailService.SendVerificationEmail(user.Email, user.FullName, verificationToken)
+}
+
+func (s *AuthService) ForgotPassword(ctx context.Context, email string) error {
+	user, err := s.userRepo.GetByEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+	// Don't reveal if user exists - return success anyway for security
+	if user == nil {
+		return nil
+	}
+
+	// Generate reset token
+	resetToken, err := GenerateToken()
+	if err != nil {
+		return err
+	}
+	resetExpiry := time.Now().Add(1 * time.Hour)
+
+	user.ResetToken = resetToken
+	user.ResetTokenExpiry = &resetExpiry
+
+	if err := s.userRepo.Update(ctx, user); err != nil {
+		return err
+	}
+
+	// Send password reset email
+	return s.emailService.SendPasswordResetEmail(user.Email, user.FullName, resetToken)
+}
+
+func (s *AuthService) ResetPassword(ctx context.Context, token, newPassword string) error {
+	user, err := s.userRepo.GetByResetToken(ctx, token)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return errors.New("invalid reset token")
+	}
+
+	// Check if token is expired
+	if user.ResetTokenExpiry != nil && time.Now().After(*user.ResetTokenExpiry) {
+		return errors.New("reset token has expired")
+	}
+
+	// Validate new password strength
+	if !util.ValidatePassword(newPassword) {
+		return errors.New("password must be at least 8 characters with uppercase, lowercase, and number")
+	}
+
+	// Hash new password
+	hashedPassword, err := util.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	// Update password and clear reset token
+	user.PasswordHash = hashedPassword
+	user.ResetToken = ""
+	user.ResetTokenExpiry = nil
+
+	return s.userRepo.Update(ctx, user)
+}
+
 func (s *AuthService) GetProfile(ctx context.Context, userID string) (*dto.UserDTO, error) {
 	user, err := s.userRepo.GetByID(ctx, userID)
 	if err != nil {
@@ -91,10 +227,11 @@ func (s *AuthService) GetProfile(ctx context.Context, userID string) (*dto.UserD
 	}
 
 	return &dto.UserDTO{
-		ID:         user.ID.Hex(),
-		Email:      user.Email,
-		FullName:   user.FullName,
-		FamilySize: user.FamilySize,
+		ID:            user.ID.Hex(),
+		Email:         user.Email,
+		FullName:      user.FullName,
+		FamilySize:    user.FamilySize,
+		EmailVerified: user.EmailVerified,
 	}, nil
 }
 
@@ -135,10 +272,11 @@ func (s *AuthService) UpdateProfile(ctx context.Context, userID string, req *dto
 	}
 
 	return &dto.UserDTO{
-		ID:         user.ID.Hex(),
-		Email:      user.Email,
-		FullName:   user.FullName,
-		FamilySize: user.FamilySize,
+		ID:            user.ID.Hex(),
+		Email:         user.Email,
+		FullName:      user.FullName,
+		FamilySize:    user.FamilySize,
+		EmailVerified: user.EmailVerified,
 	}, nil
 }
 
@@ -176,7 +314,7 @@ func (s *AuthService) ChangePassword(ctx context.Context, userID string, req *dt
 }
 
 func (s *AuthService) ValidateJWT(token string) (*util.JWTClaims, error) {
-	return util.ValidateToken(token, s.config.JWTSecret)
+	return util.ValidateToken(token, s.config.JWT.Secret)
 }
 
 func (s *AuthService) CheckUserExists(ctx context.Context, userID string) (bool, error) {
@@ -187,25 +325,34 @@ func (s *AuthService) CheckUserExists(ctx context.Context, userID string) (bool,
 	return user != nil, nil
 }
 
-func (s *AuthService) generateAuthResponse(user *domain.User) (*dto.AuthResponse, error) {
+func (s *AuthService) generateTokens(userID, email string) (string, string, error) {
 	// Generate Access Token
 	accessToken, err := util.GenerateToken(
-		user.ID.Hex(),
-		user.Email,
-		s.config.JWTSecret,
+		userID,
+		email,
+		s.config.JWT.Secret,
 		15*time.Minute,
 	)
 	if err != nil {
-		return nil, err
+		return "", "", err
 	}
 
 	// Generate Refresh Token
 	refreshToken, err := util.GenerateToken(
-		user.ID.Hex(),
-		user.Email,
-		s.config.RefreshSecret,
+		userID,
+		email,
+		s.config.JWT.RefreshSecret,
 		7*24*time.Hour,
 	)
+	if err != nil {
+		return "", "", err
+	}
+	return accessToken, refreshToken, nil
+}
+
+func (s *AuthService) generateAuthResponse(user *domain.User) (*dto.AuthResponse, error) {
+	// Generate Access Token and Refresh Token
+	accessToken, refreshToken, err := s.generateTokens(user.ID.Hex(), user.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -214,10 +361,11 @@ func (s *AuthService) generateAuthResponse(user *domain.User) (*dto.AuthResponse
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		User: dto.UserDTO{
-			ID:         user.ID.Hex(),
-			Email:      user.Email,
-			FullName:   user.FullName,
-			FamilySize: user.FamilySize,
+			ID:            user.ID.Hex(),
+			Email:         user.Email,
+			FullName:      user.FullName,
+			FamilySize:    user.FamilySize,
+			EmailVerified: user.EmailVerified,
 		},
 	}, nil
 }

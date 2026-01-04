@@ -25,7 +25,7 @@ All endpoints require authentication via Bearer token unless specified otherwise
   "source": "Salary",
   "amount": 5000.00,
   "frequency": "monthly",
-  "effective_date": "2024-01-01"
+  "effectiveDate": "2024-01-01"
 }
 ```
 
@@ -38,7 +38,7 @@ All endpoints require authentication via Bearer token unless specified otherwise
     "source": "Salary",
     "amount": 5000.00,
     "frequency": "monthly",
-    "effective_date": "2024-01-01T00:00:00Z"
+    "effectiveDate": "2024-01-01T00:00:00Z"
   }
 }
 ```
@@ -65,14 +65,14 @@ All endpoints require authentication via Bearer token unless specified otherwise
 ```json
 {
   "name": "January 2024 Budget",
-  "period_type": "monthly",
-  "start_date": "2024-01-01",
-  "end_date": "2024-01-31",
-  "total_amount": 4000.00,
+  "periodType": "monthly",
+  "startDate": "2024-01-01",
+  "endDate": "2024-01-31",
+  "totalAmount": 4000.00,
   "items": [
     {
-      "category_id": "64f1a2b3...",
-      "planned_amount": 800.00
+      "categoryId": "64f1a2b3...",
+      "plannedAmount": 800.00
     }
   ]
 }
@@ -109,13 +109,13 @@ All endpoints require authentication via Bearer token unless specified otherwise
 **Request:**
 ```json
 {
-  "category_id": "64f1a2b3c4d5e6f7a8b9c0d1",
-  "budget_id": "64f1a2b3c4d5e6f7a8b9c0d2",
+  "categoryId": "64f1a2b3c4d5e6f7a8b9c0d1",
+  "budgetId": "64f1a2b3c4d5e6f7a8b9c0d2",
   "type": "expense",
   "amount": 150.00,
   "description": "Weekly groceries",
-  "transaction_date": "2024-01-15",
-  "payment_method": "credit_card",
+  "transactionDate": "2024-01-15",
+  "paymentMethod": "credit_card",
   "notes": "Including household items"
 }
 ```
@@ -148,13 +148,13 @@ All endpoints require authentication via Bearer token unless specified otherwise
 {
   "success": true,
   "data": {
-    "total_balance": 15000.00,
-    "monthly_income": 6000.00,
-    "monthly_expenses": 4500.00,
-    "monthly_budget": 5000.00,
-    "budget_used_percentage": 90.0,
-    "recent_transactions": [...],
-    "top_categories": [...]
+    "totalBalance": 15000.00,
+    "monthlyIncome": 6000.00,
+    "monthlyExpenses": 4500.00,
+    "monthlyBudget": 5000.00,
+    "budgetUsedPercentage": 90.0,
+    "recentTransactions": [...],
+    "topCategories": [...]
   }
 }
 ```
@@ -203,9 +203,9 @@ All endpoints require authentication via Bearer token unless specified otherwise
   "data": [...],
   "meta": {
     "page": 1,
-    "per_page": 20,
+    "perPage": 20,
     "total": 150,
-    "total_pages": 8
+    "totalPages": 8
   }
 }
 ```

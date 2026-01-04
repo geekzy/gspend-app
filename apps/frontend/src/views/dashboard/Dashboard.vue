@@ -50,7 +50,7 @@
                     <dt class="text-sm font-medium text-gray-500 truncate">Total Balance</dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-bold text-gray-900 leading-tight">${{ dashboardData?.totalBalance?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
-                      <div class="ml-2 flex items-baseline text-sm font-semibold" :class="balanceChangeClass">
+                      <div v-if="hasBalanceChange" class="ml-2 flex items-baseline text-sm font-semibold" :class="balanceChangeClass">
                         {{ balanceChangeText }}
                       </div>
                     </dd>
@@ -60,7 +60,7 @@
             </div>
             <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
               <div class="text-sm">
-                <a href="#" class="font-medium text-primary-600 hover:text-primary-500">View detailed stats &rarr;</a>
+              <router-link to="/reports" class="font-medium text-primary-600 hover:text-primary-500">View detailed stats &rarr;</router-link>
               </div>
             </div>
           </div>
@@ -247,6 +247,13 @@ const userName = computed(() => authStore.user?.fullName || 'Family')
 const budgetPercent = computed(() => {
   if (!dashboardData.value?.budgetProgress) return 0
   return Math.round(dashboardData.value.budgetProgress.percentageUsed)
+})
+
+const hasBalanceChange = computed(() => {
+  // Only show percentage if there's actual balance data and transactions
+  return dashboardData.value?.totalBalance !== undefined && 
+         dashboardData.value.totalBalance > 0 && 
+         dashboardData.value.recentTransactions?.length > 0
 })
 
 const balanceChangeClass = computed(() => {

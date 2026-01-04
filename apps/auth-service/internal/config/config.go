@@ -1,31 +1,64 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Port           string `mapstructure:"PORT"`
-	GRPCPort       string `mapstructure:"GRPC_PORT"`
-	AppEnv         string `mapstructure:"APP_ENV"`
-	MongoURI       string `mapstructure:"MONGODB_URI"`
-	MongoDatabase  string `mapstructure:"MONGODB_DATABASE"`
-	RedisHost      string `mapstructure:"REDIS_HOST"`
-	RedisPort      string `mapstructure:"REDIS_PORT"`
-	RedisPassword  string `mapstructure:"REDIS_PASSWORD"`
-	JWTSecret      string `mapstructure:"JWT_SECRET"`
-	RefreshSecret  string `mapstructure:"JWT_REFRESH_SECRET"`
+	Port     string `mapstructure:"port"`
+	GRPCPort string `mapstructure:"grpc_port"`
+	AppEnv   string `mapstructure:"app_env"`
+	AppURL   string `mapstructure:"app_url"`
+	JWT      JWTConfig
+	MongoDB  MongoConfig
+	Redis    RedisConfig
+	SMTP     SMTPConfig
+}
+
+type JWTConfig struct {
+	Secret        string `mapstructure:"secret"`
+	RefreshSecret string `mapstructure:"refresh_secret"`
+}
+
+type MongoConfig struct {
+	URI      string `mapstructure:"uri"`
+	Database string `mapstructure:"database"`
+}
+
+type RedisConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Password string `mapstructure:"password"`
+}
+
+type SMTPConfig struct {
+	Enabled  bool   `mapstructure:"enabled"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	From     string `mapstructure:"from"`
 }
 
 func LoadConfig() (config Config, err error) {
-	viper.SetDefault("PORT", "8081")
-	viper.SetDefault("GRPC_PORT", "9091")
-	viper.SetDefault("APP_ENV", "production")
-	viper.SetDefault("MONGODB_URI", "mongodb://mongodb:27017")
-	viper.SetDefault("MONGODB_DATABASE", "gspend")
-	viper.SetDefault("REDIS_HOST", "redis")
-	viper.SetDefault("REDIS_PORT", "6379")
+	// Read from config file
+	viper.SetConfigName("config") // name of config file (without extension)
+	viper.SetConfigType("yaml")   // REQUIRED if the config file does not have the extension in the name
+	viper.AddConfigPath(".")      // optionally look for config in the working directory
+	viper.AddConfigPath("./config")
 
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return config, err
+		}
+		// Config file not found; ignore error if desired
+	}
+
+	// Map environment variables to nested keys
+	// e.g. SMTP_HOST -> smtp.host
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
 	err = viper.Unmarshal(&config)

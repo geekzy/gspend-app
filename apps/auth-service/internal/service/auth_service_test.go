@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/config"
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/domain"
@@ -55,13 +56,37 @@ func (m *MockUserRepository) Exists(ctx context.Context, email string) (bool, er
 	return args.Bool(0), args.Error(1)
 }
 
+func (m *MockUserRepository) GetByResetToken(ctx context.Context, token string) (*domain.User, error) {
+	args := m.Called(ctx, token)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) GetByVerificationToken(ctx context.Context, token string) (*domain.User, error) {
+	args := m.Called(ctx, token)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) UpdateResetToken(ctx context.Context, userID, token string, expiry time.Time) error {
+	args := m.Called(ctx, userID, token, expiry)
+	return args.Error(0)
+}
+
 func TestAuthService_Login(t *testing.T) {
 	mockRepo := new(MockUserRepository)
 	cfg := &config.Config{
-		JWTSecret:     "test-secret",
-		RefreshSecret: "test-refresh-secret",
+		JWT: config.JWTConfig{
+			Secret:        "test-secret",
+			RefreshSecret: "test-refresh-secret",
+		},
 	}
-	authService := NewAuthService(mockRepo, cfg)
+	emailService := NewEmailService(cfg)
+	authService := NewAuthService(mockRepo, cfg, emailService)
 
 	ctx := context.Background()
 	email := "test@example.com"
@@ -147,10 +172,13 @@ func TestAuthService_Login(t *testing.T) {
 func TestAuthService_Register(t *testing.T) {
 	mockRepo := new(MockUserRepository)
 	cfg := &config.Config{
-		JWTSecret:     "test-secret",
-		RefreshSecret: "test-refresh-secret",
+		JWT: config.JWTConfig{
+			Secret:        "test-secret",
+			RefreshSecret: "test-refresh-secret",
+		},
 	}
-	authService := NewAuthService(mockRepo, cfg)
+	emailService := NewEmailService(cfg)
+	authService := NewAuthService(mockRepo, cfg, emailService)
 
 	ctx := context.Background()
 	req := &dto.RegisterRequest{
@@ -186,7 +214,9 @@ func TestAuthService_Register(t *testing.T) {
 
 func TestAuthService_GetProfile(t *testing.T) {
 	mockRepo := new(MockUserRepository)
-	authService := NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := NewEmailService(cfg)
+	authService := NewAuthService(mockRepo, cfg, emailService)
 
 	ctx := context.Background()
 	userID := primitive.NewObjectID().Hex()
@@ -205,7 +235,9 @@ func TestAuthService_GetProfile(t *testing.T) {
 
 func TestAuthService_CheckUserExists(t *testing.T) {
 	mockRepo := new(MockUserRepository)
-	authService := NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := NewEmailService(cfg)
+	authService := NewAuthService(mockRepo, cfg, emailService)
 
 	ctx := context.Background()
 	userID := primitive.NewObjectID().Hex()
@@ -234,7 +266,9 @@ func TestAuthService_CheckUserExists(t *testing.T) {
 
 func TestAuthService_UpdateProfile(t *testing.T) {
 	mockRepo := new(MockUserRepository)
-	authService := NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := NewEmailService(cfg)
+	authService := NewAuthService(mockRepo, cfg, emailService)
 
 	ctx := context.Background()
 	userID := primitive.NewObjectID().Hex()
@@ -316,7 +350,9 @@ func TestAuthService_UpdateProfile(t *testing.T) {
 
 func TestAuthService_ChangePassword(t *testing.T) {
 	mockRepo := new(MockUserRepository)
-	authService := NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := NewEmailService(cfg)
+	authService := NewAuthService(mockRepo, cfg, emailService)
 
 	ctx := context.Background()
 	userID := primitive.NewObjectID().Hex()

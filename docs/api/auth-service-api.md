@@ -28,8 +28,8 @@ Base URL: `/api/v1/auth`
 {
   "email": "family@example.com",
   "password": "SecurePass123",
-  "full_name": "John Doe",
-  "family_size": 5
+  "fullName": "John Doe",
+  "familySize": 5
 }
 ```
 
@@ -40,8 +40,8 @@ Base URL: `/api/v1/auth`
   "data": {
     "id": "64f1a2b3c4d5e6f7a8b9c0d1",
     "email": "family@example.com",
-    "full_name": "John Doe",
-    "family_size": 5,
+    "fullName": "John Doe",
+    "familySize": 5,
     "created_at": "2024-01-15T10:30:00Z"
   }
 }
@@ -62,10 +62,10 @@ Base URL: `/api/v1/auth`
 {
   "success": true,
   "data": {
-    "access_token": "eyJhbGciOiJIUzI1NiIs...",
-    "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
-    "expires_in": 900,
-    "token_type": "Bearer"
+    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIs...",
+    "expiresIn": 900,
+    "tokenType": "Bearer"
   }
 }
 ```
@@ -102,8 +102,8 @@ Authorization: Bearer <access_token>
 **Request:**
 ```json
 {
-  "full_name": "John Smith",
-  "family_size": 4
+  "fullName": "John Smith",
+  "familySize": 4
 }
 ```
 
@@ -114,8 +114,8 @@ Authorization: Bearer <access_token>
   "data": {
     "id": "64f1a2b3c4d5e6f7a8b9c0d1",
     "email": "family@example.com",
-    "full_name": "John Smith",
-    "family_size": 4,
+    "fullName": "John Smith",
+    "familySize": 4,
     "updated_at": "2024-01-16T14:20:00Z"
   }
 }
@@ -131,8 +131,8 @@ Authorization: Bearer <access_token>
 **Request:**
 ```json
 {
-  "current_password": "OldPass123",
-  "new_password": "NewSecurePass456"
+  "currentPassword": "OldPass123",
+  "newPassword": "NewSecurePass456"
 }
 ```
 

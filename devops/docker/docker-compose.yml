@@ -1,4 +1,3 @@
-
 services:
   # Frontend
   frontend:
@@ -21,7 +20,7 @@ services:
       context: ../../apps/auth-service
       dockerfile: Dockerfile
     ports:
-      - "9091:9091"  # Expose gRPC port for inter-service communication
+      - "9091:9091" # Expose gRPC port for inter-service communication
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
       - MONGODB_DATABASE=gspend
@@ -31,6 +30,14 @@ services:
       - APP_ENV=development
       - PORT=8081
       - GRPC_PORT=9091
+      # SMTP Configuration for Gmail
+      - SMTP_ENABLED=${SMTP_ENABLED:-true}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-geekzy@gmail.com}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-ptiuhkquqopsghuq}
+      - SMTP_FROM=${SMTP_FROM:-gSpend <geekzy@gmail.com>}
+      - APP_URL=${APP_URL:-http://localhost}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -40,7 +47,7 @@ services:
       - gspend-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/api/v1/auth/health"]
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/api/v1/auth/health" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -52,7 +59,7 @@ services:
       context: ../../apps/financial-service
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"  # Expose port for direct access during development
+      - "8082:8082" # Expose port for direct access during development
     environment:
       - MONGODB_URI=mongodb://mongodb:27017
       - MONGODB_DATABASE=gspend
@@ -72,7 +79,7 @@ services:
       - gspend-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/api/v1/health"]
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/api/v1/health" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -88,7 +95,7 @@ services:
     volumes:
       - mongodb-data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -105,7 +112,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5

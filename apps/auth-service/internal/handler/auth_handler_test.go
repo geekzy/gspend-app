@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/config"
 	"github.com/geekzy/gspend-app/apps/auth-service/internal/domain"
@@ -60,11 +61,35 @@ func (m *MockUserRepository) Exists(ctx context.Context, email string) (bool, er
 	return args.Bool(0), args.Error(1)
 }
 
+func (m *MockUserRepository) GetByResetToken(ctx context.Context, token string) (*domain.User, error) {
+	args := m.Called(ctx, token)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) GetByVerificationToken(ctx context.Context, token string) (*domain.User, error) {
+	args := m.Called(ctx, token)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) UpdateResetToken(ctx context.Context, userID, token string, expiry time.Time) error {
+	args := m.Called(ctx, userID, token, expiry)
+	return args.Error(0)
+}
+
 func TestAuthHandler_Login(t *testing.T) {
 	e := echo.New()
 	mockRepo := new(MockUserRepository)
-	cfg := &config.Config{JWTSecret: "test", RefreshSecret: "test-refresh"}
-	authService := service.NewAuthService(mockRepo, cfg)
+	cfg := &config.Config{
+		JWT: config.JWTConfig{Secret: "test", RefreshSecret: "test-refresh"},
+	}
+	emailService := service.NewEmailService(cfg)
+	authService := service.NewAuthService(mockRepo, cfg, emailService)
 	h := NewAuthHandler(authService)
 
 	t.Run("Success", func(t *testing.T) {
@@ -121,7 +146,9 @@ func TestAuthHandler_Login(t *testing.T) {
 func TestAuthHandler_GetProfile(t *testing.T) {
 	e := echo.New()
 	mockRepo := new(MockUserRepository)
-	authService := service.NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := service.NewEmailService(cfg)
+	authService := service.NewAuthService(mockRepo, cfg, emailService)
 	h := NewAuthHandler(authService)
 
 	t.Run("Success", func(t *testing.T) {
@@ -149,8 +176,11 @@ func TestAuthHandler_GetProfile(t *testing.T) {
 func TestAuthHandler_Register(t *testing.T) {
 	e := echo.New()
 	mockRepo := new(MockUserRepository)
-	cfg := &config.Config{JWTSecret: "test", RefreshSecret: "test-refresh"}
-	authService := service.NewAuthService(mockRepo, cfg)
+	cfg := &config.Config{
+		JWT: config.JWTConfig{Secret: "test", RefreshSecret: "test-refresh"},
+	}
+	emailService := service.NewEmailService(cfg)
+	authService := service.NewAuthService(mockRepo, cfg, emailService)
 	h := NewAuthHandler(authService)
 
 	t.Run("Success", func(t *testing.T) {
@@ -179,7 +209,9 @@ func TestAuthHandler_Register(t *testing.T) {
 func TestAuthHandler_UpdateProfile(t *testing.T) {
 	e := echo.New()
 	mockRepo := new(MockUserRepository)
-	authService := service.NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := service.NewEmailService(cfg)
+	authService := service.NewAuthService(mockRepo, cfg, emailService)
 	h := NewAuthHandler(authService)
 
 	t.Run("Success", func(t *testing.T) {
@@ -223,7 +255,9 @@ func TestAuthHandler_UpdateProfile(t *testing.T) {
 func TestAuthHandler_ChangePassword(t *testing.T) {
 	e := echo.New()
 	mockRepo := new(MockUserRepository)
-	authService := service.NewAuthService(mockRepo, &config.Config{})
+	cfg := &config.Config{}
+	emailService := service.NewEmailService(cfg)
+	authService := service.NewAuthService(mockRepo, cfg, emailService)
 	h := NewAuthHandler(authService)
 
 	t.Run("Success", func(t *testing.T) {

@@ -18,6 +18,21 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/auth/Register.vue')
     },
     {
+        path: '/forgot-password',
+        name: 'ForgotPassword',
+        component: () => import('@/views/auth/ForgotPassword.vue')
+    },
+    {
+        path: '/reset-password',
+        name: 'ResetPassword',
+        component: () => import('@/views/auth/ResetPassword.vue')
+    },
+    {
+        path: '/verify-email',
+        name: 'VerifyEmail',
+        component: () => import('@/views/auth/VerifyEmail.vue')
+    },
+    {
         path: '/income',
         name: 'Income',
         component: () => import('@/views/income/IncomeIndex.vue'),

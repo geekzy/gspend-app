@@ -128,13 +128,13 @@ func TestDashboardHandler_GetSummary(t *testing.T) {
 		assert.True(t, response["success"].(bool))
 
 		data := response["data"].(map[string]interface{})
-		assert.Equal(t, 2500.0, data["total_balance"])
-		assert.Equal(t, 3000.0, data["monthly_income"])
-		assert.Equal(t, 1800.0, data["monthly_expenses"])
+		assert.Equal(t, 2500.0, data["totalBalance"])
+		assert.Equal(t, 3000.0, data["monthlyIncome"])
+		assert.Equal(t, 1800.0, data["monthlyExpenses"])
 
-		budgetProgressData := data["budget_progress"].(map[string]interface{})
-		assert.Equal(t, 2000.0, budgetProgressData["total_budget"])
-		assert.Equal(t, 90.0, budgetProgressData["percentage_used"])
+		budgetProgressData := data["budgetProgress"].(map[string]interface{})
+		assert.Equal(t, 2000.0, budgetProgressData["totalBudget"])
+		assert.Equal(t, 90.0, budgetProgressData["percentageUsed"])
 
 		dashboardRepo.AssertExpectations(t)
 	})
@@ -340,9 +340,9 @@ func TestDashboardHandler_GetBudgetProgress(t *testing.T) {
 		assert.True(t, response["success"].(bool))
 
 		data := response["data"].(map[string]interface{})
-		assert.Equal(t, 2000.0, data["total_budget"])
-		assert.Equal(t, 1500.0, data["total_spent"])
-		assert.Equal(t, 75.0, data["percentage_used"])
+		assert.Equal(t, 2000.0, data["totalBudget"])
+		assert.Equal(t, 1500.0, data["totalSpent"])
+		assert.Equal(t, 75.0, data["percentageUsed"])
 
 		dashboardRepo.AssertExpectations(t)
 	})

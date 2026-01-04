@@ -14,6 +14,14 @@ type User struct {
 	PasswordHash string             `bson:"passwordHash" json:"-"`
 	FullName     string             `bson:"fullName" json:"fullName"`
 	FamilySize   int                `bson:"familySize" json:"familySize"`
+	// Email verification
+	EmailVerified       bool       `bson:"emailVerified" json:"emailVerified"`
+	VerificationToken   string     `bson:"verificationToken,omitempty" json:"-"`
+	VerificationExpiry  *time.Time `bson:"verificationExpiry,omitempty" json:"-"`
+	// Password reset
+	ResetToken          string     `bson:"resetToken,omitempty" json:"-"`
+	ResetTokenExpiry    *time.Time `bson:"resetTokenExpiry,omitempty" json:"-"`
+	// Timestamps
 	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
 	UpdatedAt    time.Time          `bson:"updatedAt" json:"updatedAt"`
 	DeletedAt    *time.Time         `bson:"deletedAt,omitempty" json:"deletedAt,omitempty"`
@@ -27,4 +35,7 @@ type UserRepository interface {
 	Update(ctx context.Context, user *User) error
 	Delete(ctx context.Context, id string) error
 	Exists(ctx context.Context, email string) (bool, error)
+	// Token operations
+	GetByVerificationToken(ctx context.Context, token string) (*User, error)
+	GetByResetToken(ctx context.Context, token string) (*User, error)
 }

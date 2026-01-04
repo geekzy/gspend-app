@@ -62,9 +62,9 @@
             </div>
 
             <div class="text-sm">
-              <a href="#" class="font-bold text-primary-600 hover:text-primary-500">
+              <router-link to="/forgot-password" class="font-bold text-primary-600 hover:text-primary-500">
                 Forgot password?
-              </a>
+              </router-link>
             </div>
           </div>
 
