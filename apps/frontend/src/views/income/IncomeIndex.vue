@@ -56,7 +56,7 @@
             </div>
           </div>
           <h3 class="text-lg font-bold text-gray-900 mb-1">{{ income.source }}</h3>
-          <p class="text-3xl font-black text-gray-900 mb-4">${{ income.amount.toLocaleString() }}</p>
+          <p class="text-3xl font-black text-gray-900 mb-4">{{ formatCurrency(income.amount) }}</p>
           <div class="flex items-center text-sm text-gray-400 mb-6">
             <CalendarIcon class="w-4 h-4 mr-2" />
             Effective: {{ formatDate(income.effectiveDate) }}
@@ -135,6 +135,7 @@ import { ref, onMounted } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import IncomeEdit from '@/components/forms/IncomeEdit.vue'
 import { financialService, Income } from '@/services/financialService'
+import { formatCurrency } from '@/utils/currency'
 import { 
   WalletIcon, 
   DollarSignIcon, 

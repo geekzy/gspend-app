@@ -65,7 +65,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Average Monthly Spending</div>
-          <div class="text-2xl font-bold text-gray-900">${{ report.averageSpending.toLocaleString() }}</div>
+          <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(report.averageSpending) }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Trend Direction</div>
@@ -151,18 +151,18 @@
                   {{ formatMonth(month.month) }}
                 </td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-green-600">
-                  ${{ month.totalIncome.toLocaleString() }}
+                  {{ formatCurrency(month.totalIncome) }}
                 </td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-red-600">
-                  ${{ month.totalExpenses.toLocaleString() }}
+                  {{ formatCurrency(month.totalExpenses) }}
                 </td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm" :class="netAmountColor(month.netAmount)">
-                  {{ month.netAmount >= 0 ? '+' : '' }}${{ month.netAmount.toLocaleString() }}
+                  {{ month.netAmount >= 0 ? '+' : '' }}{{ formatCurrency(month.netAmount) }}
                 </td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden sm:table-cell">
                   <div v-if="month.topCategory">
                     {{ month.topCategory.categoryName }}
-                    <span class="text-gray-500">(${{ month.topCategory.amount.toLocaleString() }})</span>
+                    <span class="text-gray-500">({{ formatCurrency(month.topCategory.amount) }})</span>
                   </div>
                   <span v-else class="text-gray-400">-</span>
                 </td>
@@ -191,6 +191,7 @@ import { ref, onMounted, computed } from 'vue'
 import { financialService, type MonthlyTrendsReport } from '@/services/financialService'
 import LineChart from '@/components/charts/LineChart.vue'
 import Breadcrumb from '@/components/common/Breadcrumb.vue'
+import { formatCurrency } from '@/utils/currency'
 
 const report = ref<MonthlyTrendsReport | null>(null)
 const loading = ref(false)

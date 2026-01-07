@@ -92,7 +92,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="text-center">
           <div class="text-sm font-medium text-gray-500 mb-1">Total Spending</div>
-          <div class="text-3xl font-bold text-gray-900">${{ report.totalSpent.toLocaleString() }}</div>
+          <div class="text-3xl font-bold text-gray-900">{{ formatCurrency(report.totalSpent) }}</div>
           <div class="text-sm text-gray-600 mt-1">
             {{ formatDateRange(report.startDate, report.endDate) }}
           </div>
@@ -139,7 +139,7 @@
                 </div>
               </div>
               <div class="text-right ml-4 flex-shrink-0">
-                <div class="font-semibold text-gray-900 text-sm sm:text-base">${{ category.amount.toLocaleString() }}</div>
+                <div class="font-semibold text-gray-900 text-sm sm:text-base">{{ formatCurrency(category.amount) }}</div>
               </div>
             </div>
           </div>
@@ -165,6 +165,7 @@ import { ref, onMounted, computed } from 'vue'
 import { financialService, type SpendingByCategoryReport } from '@/services/financialService'
 import PieChart from '@/components/charts/PieChart.vue'
 import Breadcrumb from '@/components/common/Breadcrumb.vue'
+import { formatCurrency } from '@/utils/currency'
 
 const report = ref<SpendingByCategoryReport | null>(null)
 const loading = ref(false)

@@ -62,16 +62,16 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Total Budgeted</div>
-          <div class="text-2xl font-bold text-gray-900">${{ report.totalBudgeted.toLocaleString() }}</div>
+          <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(report.totalBudgeted) }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Total Spent</div>
-          <div class="text-2xl font-bold text-gray-900">${{ report.totalSpent.toLocaleString() }}</div>
+          <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(report.totalSpent) }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Overall Variance</div>
           <div class="text-2xl font-bold" :class="varianceColor(report.overallVariance)">
-            {{ report.overallVariance >= 0 ? '+' : '' }}${{ report.overallVariance.toLocaleString() }}
+            {{ report.overallVariance >= 0 ? '+' : '' }}{{ formatCurrency(report.overallVariance) }}
           </div>
         </div>
       </div>
@@ -129,13 +129,13 @@
                   {{ category.categoryName }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${{ category.budgeted.toLocaleString() }}
+                  {{ formatCurrency(category.budgeted) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${{ category.actual.toLocaleString() }}
+                  {{ formatCurrency(category.actual) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm" :class="varianceColor(category.variance)">
-                  {{ category.variance >= 0 ? '+' : '' }}${{ category.variance.toLocaleString() }}
+                  {{ category.variance >= 0 ? '+' : '' }}{{ formatCurrency(category.variance) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm" :class="percentageColor(category.percentageUsed)">
                   {{ category.percentageUsed.toFixed(1) }}%
@@ -174,6 +174,7 @@ import { ref, onMounted, computed } from 'vue'
 import { financialService, type BudgetVsActualReport } from '@/services/financialService'
 import BarChart from '@/components/charts/BarChart.vue'
 import Breadcrumb from '@/components/common/Breadcrumb.vue'
+import { formatCurrency } from '@/utils/currency'
 
 const report = ref<BudgetVsActualReport | null>(null)
 const loading = ref(false)

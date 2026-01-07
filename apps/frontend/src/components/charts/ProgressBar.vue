@@ -12,14 +12,15 @@
       ></div>
     </div>
     <div v-if="showAmounts" class="flex items-center justify-between mt-1 text-xs text-gray-500">
-      <span>${{ spent.toLocaleString() }} spent</span>
-      <span>${{ total.toLocaleString() }} budget</span>
+      <span>{{ formatCurrency(spent) }} spent</span>
+      <span>{{ formatCurrency(total) }} budget</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { formatCurrency } from '@/utils/currency'
 
 interface Props {
   label: string

@@ -77,16 +77,16 @@
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-gray-500">Original Total</span>
-                <span class="font-bold font-mono text-gray-600">${{ originalTotalAmount.toLocaleString() }}</span>
+                <span class="font-bold font-mono text-gray-600">{{ formatCurrency(originalTotalAmount) }}</span>
               </div>
               <div class="flex justify-between text-lg font-black border-t border-gray-200 pt-2 mt-2">
                 <span class="text-gray-900">New Total</span>
                 <span :class="totalPlannedAmount !== originalTotalAmount ? 'text-orange-600' : 'text-primary-600'">
-                  ${{ totalPlannedAmount.toLocaleString() }}
+                  {{ formatCurrency(totalPlannedAmount) }}
                 </span>
               </div>
               <div v-if="totalPlannedAmount !== originalTotalAmount" class="text-xs text-orange-600 font-medium">
-                {{ totalPlannedAmount > originalTotalAmount ? '+' : '' }}${{ (totalPlannedAmount - originalTotalAmount).toLocaleString() }} change
+                {{ totalPlannedAmount > originalTotalAmount ? '+' : '' }}{{ formatCurrency(totalPlannedAmount - originalTotalAmount) }} change
               </div>
             </div>
           </div>
@@ -152,7 +152,7 @@
               <!-- Spent Amount (Read-only) -->
               <div class="col-span-3">
                 <div class="px-4 py-2 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-600">
-                  ${{ (item.spentAmount || 0).toLocaleString() }} spent
+                  {{ formatCurrency(item.spentAmount || 0) }} spent
                 </div>
               </div>
               
@@ -222,6 +222,7 @@ import { useFormNotifications } from '@/composables/useFormNotifications'
 import { FormValidators, ValidationRules, FieldValidator } from '@/utils/validation'
 import ValidationSummary from '@/components/common/ValidationSummary.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import { formatCurrency } from '@/utils/currency'
 
 interface Props {
   budget: Budget

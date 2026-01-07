@@ -179,7 +179,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold">
                   <span :class="tx.type === 'expense' ? 'text-red-500' : 'text-green-600'">
-                    {{ tx.type === 'expense' ? '-' : '+' }}${{ tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
+                    {{ tx.type === 'expense' ? '-' : '' }}{{ formatCurrency(tx.amount, { decimals: 2 }) }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -334,6 +334,7 @@ import {
   Category, 
   TransactionResponse 
 } from '@/services/financialService'
+import { formatCurrency } from '@/utils/currency'
 import { 
   HistoryIcon, 
   SearchIcon, 

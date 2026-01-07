@@ -65,7 +65,7 @@
                 </button>
               </div>
               <div class="text-sm font-bold text-gray-500 mb-1">Total Allocated</div>
-              <div class="text-4xl font-black text-gray-900">${{ activeBudget.totalAmount.toLocaleString() }}</div>
+              <div class="text-4xl font-black text-gray-900">{{ formatCurrency(activeBudget.totalAmount) }}</div>
             </div>
           </div>
           
@@ -102,11 +102,11 @@
             <div class="flex justify-between items-end mb-2">
               <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-tight">Spent</p>
-                <p class="text-xl font-black text-gray-900">${{ item.spentAmount.toLocaleString() }}</p>
+                <p class="text-xl font-black text-gray-900">{{ formatCurrency(item.spentAmount) }}</p>
               </div>
               <div class="text-right">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-tight text-right">Limit</p>
-                <p class="text-sm font-bold text-gray-500">${{ item.plannedAmount.toLocaleString() }}</p>
+                <p class="text-sm font-bold text-gray-500">{{ formatCurrency(item.plannedAmount) }}</p>
               </div>
             </div>
 
@@ -164,7 +164,7 @@
                   </div>
                   <div class="flex justify-between text-lg font-black border-t border-gray-200 pt-2 mt-2">
                     <span class="text-gray-900">Total Plan</span>
-                    <span class="text-primary-600">${{ totalPlannedAmount.toLocaleString() }}</span>
+                    <span class="text-primary-600">{{ formatCurrency(totalPlannedAmount) }}</span>
                   </div>
                 </div>
               </div>
@@ -222,6 +222,7 @@ import { ref, computed, onMounted } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import BudgetEdit from '@/components/forms/BudgetEdit.vue'
 import { financialService, Budget, Category } from '@/services/financialService'
+import { formatCurrency } from '@/utils/currency'
 import { 
   BarChart3Icon, 
   CalendarIcon, 

@@ -1,6 +1,6 @@
 <template>
-  <div class="relative w-full" :style="{ maxHeight: height + 'px' }">
-    <div class="relative w-full aspect-square mx-auto">
+  <div class="relative w-full">
+    <div class="relative w-full mx-auto" :style="{ maxWidth: width + 'px', maxHeight: height + 'px' }">
       <canvas ref="chartCanvas"></canvas>
     </div>
     <div v-if="showLegend" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -14,7 +14,7 @@
           :style="{ backgroundColor: colors[index % colors.length] }"
         ></div>
         <span class="text-gray-700 truncate flex-1">{{ item.label }}</span>
-        <span class="ml-2 text-gray-900 font-medium text-xs sm:text-sm">${{ item.value.toLocaleString() }}</span>
+        <span class="ml-2 text-gray-900 font-medium text-xs sm:text-sm">{{ formatCurrency(item.value) }}</span>
       </div>
     </div>
   </div>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue'
 import { Chart, ChartConfiguration, registerables } from 'chart.js'
+import { formatCurrency, formatChartCurrency } from '@/utils/currency'
 
 Chart.register(...registerables)
 
@@ -91,7 +92,7 @@ const createChart = async () => {
               const value = context.parsed
               const total = props.data.reduce((sum, item) => sum + item.value, 0)
               const percentage = ((value / total) * 100).toFixed(1)
-              return `${context.label}: $${value.toLocaleString()} (${percentage}%)`
+              return `${context.label}: ${formatChartCurrency(value)} (${percentage}%)`
             }
           },
           backgroundColor: 'rgba(0, 0, 0, 0.8)',

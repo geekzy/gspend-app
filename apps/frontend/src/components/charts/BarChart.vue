@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue'
 import { Chart, ChartConfiguration, registerables } from 'chart.js'
+import { formatChartCurrency } from '@/utils/currency'
 
 Chart.register(...registerables)
 
@@ -106,7 +107,7 @@ const createChart = async () => {
             label: (context) => {
               const value = context.parsed?.y
               if (value === null || value === undefined) return ''
-              return `${context.dataset.label}: $${value.toLocaleString()}`
+              return `${context.dataset.label}: ${formatChartCurrency(value)}`
             }
           },
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -123,7 +124,7 @@ const createChart = async () => {
           beginAtZero: true,
           ticks: {
             callback: function(value) {
-              return '$' + Number(value).toLocaleString()
+              return formatChartCurrency(Number(value))
             },
             font: {
               size: 11

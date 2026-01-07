@@ -113,7 +113,7 @@
               <span class="text-sm font-bold text-green-700">Monthly Equivalent:</span>
             </div>
             <span class="text-lg font-black text-green-700">
-              ${{ monthlyEquivalent.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
+              {{ formatCurrency(monthlyEquivalent, { decimals: 2 }) }}
             </span>
           </div>
         </div>
@@ -150,6 +150,7 @@ import { useFormNotifications } from '@/composables/useFormNotifications'
 import { FormValidators } from '@/utils/validation'
 import ValidationSummary from '@/components/common/ValidationSummary.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import { formatCurrency } from '@/utils/currency'
 
 interface Props {
   income: Income

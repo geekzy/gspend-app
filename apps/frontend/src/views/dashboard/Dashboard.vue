@@ -49,7 +49,7 @@
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">Total Balance</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-bold text-gray-900 leading-tight">${{ dashboardData?.totalBalance?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
+                      <div class="text-2xl font-bold text-gray-900 leading-tight">{{ formatCurrency(dashboardData?.totalBalance, { decimals: 2 }) }}</div>
                       <div v-if="hasBalanceChange" class="ml-2 flex items-baseline text-sm font-semibold" :class="balanceChangeClass">
                         {{ balanceChangeText }}
                       </div>
@@ -76,8 +76,8 @@
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">Monthly Budget</dt>
                     <dd class="flex items-baseline justify-between mb-1">
-                      <div class="text-2xl font-bold text-gray-900 leading-tight">${{ dashboardData?.budgetProgress?.totalSpent?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
-                      <div v-if="dashboardData?.budgetProgress" class="text-xs text-gray-400 font-medium whitespace-nowrap">Plan: ${{ dashboardData.budgetProgress.totalBudget.toLocaleString() }}</div>
+                      <div class="text-2xl font-bold text-gray-900 leading-tight">{{ formatCurrency(dashboardData?.budgetProgress?.totalSpent, { decimals: 2 }) }}</div>
+                      <div v-if="dashboardData?.budgetProgress" class="text-xs text-gray-400 font-medium whitespace-nowrap">Plan: {{ formatCurrency(dashboardData.budgetProgress.totalBudget) }}</div>
                     </dd>
                   </dl>
                   <!-- Budget Progress Bar -->
@@ -109,7 +109,7 @@
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">Monthly Expenses</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-bold text-red-600 leading-tight">${{ dashboardData?.monthlyExpenses?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00' }}</div>
+                      <div class="text-2xl font-bold text-red-600 leading-tight">{{ formatCurrency(dashboardData?.monthlyExpenses, { decimals: 2 }) }}</div>
                     </dd>
                   </dl>
                 </div>
@@ -118,7 +118,7 @@
             <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
               <div class="text-sm">
                 <span class="text-gray-500">Income: </span>
-                <span class="text-green-600 font-medium">${{ dashboardData?.monthlyIncome?.toLocaleString() || '0' }}</span>
+                <span class="text-green-600 font-medium">{{ formatCurrency(dashboardData?.monthlyIncome) }}</span>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold" :class="tx.type === 'expense' ? 'text-red-600' : 'text-green-600'">
-                      {{ tx.type === 'expense' ? '-' : '+' }}${{ tx.amount.toLocaleString() }}
+                      {{ tx.type === 'expense' ? '-' : '' }}{{ formatCurrency(tx.amount) }}
                     </td>
                   </tr>
                 </tbody>
@@ -201,7 +201,7 @@
                         ></div>
                         <span class="text-sm font-bold text-gray-700">{{ cat.categoryName }}</span>
                       </div>
-                      <span class="text-sm font-bold text-gray-900">${{ cat.amount.toLocaleString() }}</span>
+                      <span class="text-sm font-bold text-gray-900">{{ formatCurrency(cat.amount) }}</span>
                     </div>
                   </div>
                 </div>
@@ -225,6 +225,7 @@ import PieChart from '@/components/charts/PieChart.vue'
 
 import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 import { financialService, DashboardSummary } from '@/services/financialService'
+import { formatCurrency } from '@/utils/currency'
 import { useAuthStore } from '@/stores/auth'
 import { useLoadingStore } from '@/stores/loading'
 import { useNotificationStore } from '@/stores/notification'
