@@ -39,3 +39,6 @@ vendor/
 # Test results
 test-results/
 *.test-results.json
+
+# TypeScript build info
+*.tsbuildinfo
