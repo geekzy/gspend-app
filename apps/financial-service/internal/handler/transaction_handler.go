@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/domain"
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/dto"
 	"github.com/geekzy/gspend-app/apps/financial-service/internal/service"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -27,7 +27,10 @@ func NewTransactionHandler(transactionService *service.TransactionService) *Tran
 
 func (h *TransactionHandler) Create(c echo.Context) error {
 	userID := c.Get("user_id").(string)
-	userObjectID, _ := primitive.ObjectIDFromHex(userID)
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid user ID"})
+	}
 
 	req := new(dto.CreateTransactionRequest)
 	if err := c.Bind(req); err != nil {

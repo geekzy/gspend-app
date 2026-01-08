@@ -11,11 +11,8 @@
           </p>
         </div>
         <div class="mt-4 flex md:mt-0 md:ml-4">
-          <button 
-            @click="openAddModal"
-            type="button" 
-            class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-2xl shadow-lg text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 transition-all active:scale-95"
-          >
+          <button @click="openAddModal" type="button"
+            class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-2xl shadow-lg text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 transition-all active:scale-95">
             Add Transaction
           </button>
         </div>
@@ -25,21 +22,14 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
         <!-- Date Range Filter -->
         <div class="lg:col-span-1">
-          <DateRangeFilter 
-            v-model="dateFilter"
-            @change="onDateFilterChange"
-          />
+          <DateRangeFilter v-model="dateFilter" @change="onDateFilterChange" />
         </div>
-        
+
         <!-- Category Filter -->
         <div class="lg:col-span-1">
-          <CategoryFilter 
-            :categories="categories"
-            v-model="categoryFilter"
-            @change="onCategoryFilterChange"
-          />
+          <CategoryFilter :categories="categories" v-model="categoryFilter" @change="onCategoryFilterChange" />
         </div>
-        
+
         <!-- Search and Quick Filters -->
         <div class="lg:col-span-2 space-y-4">
           <!-- Search -->
@@ -47,64 +37,46 @@
             <label class="block text-sm font-bold text-gray-700 mb-2">Search</label>
             <div class="relative">
               <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input 
-                v-model="search" 
-                type="text" 
-                placeholder="Search description..." 
+              <input v-model="search" type="text" placeholder="Search description..."
                 class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-500"
-                @input="onSearchChange"
-              />
+                @input="onSearchChange" />
             </div>
           </div>
-          
+
           <!-- Applied Filters -->
           <div v-if="hasActiveFilters" class="bg-white rounded-2xl border border-gray-200 p-4">
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm font-bold text-gray-700">Active Filters</span>
-              <button 
-                @click="clearAllFilters"
-                class="text-xs text-red-500 hover:text-red-600 transition-colors"
-              >
+              <button @click="clearAllFilters" class="text-xs text-red-500 hover:text-red-600 transition-colors">
                 Clear All
               </button>
             </div>
             <div class="flex flex-wrap gap-2">
-              <span
-                v-if="dateFilter.startDate && dateFilter.endDate"
-                class="inline-flex items-center space-x-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg"
-              >
+              <span v-if="dateFilter.startDate && dateFilter.endDate"
+                class="inline-flex items-center space-x-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg">
                 <span>📅</span>
                 <span>{{ formatDateRange(dateFilter.startDate, dateFilter.endDate) }}</span>
               </span>
-              
-              <span
-                v-if="categoryFilter.type !== 'all'"
-                class="inline-flex items-center space-x-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-lg"
-              >
+
+              <span v-if="categoryFilter.type !== 'all'"
+                class="inline-flex items-center space-x-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-lg">
                 <span>🏷️</span>
                 <span>{{ categoryFilter.type === 'income' ? 'Income' : 'Expense' }}</span>
               </span>
-              
-              <span
-                v-for="categoryId in categoryFilter.categoryIds.slice(0, 2)"
-                :key="categoryId"
-                class="inline-flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-lg"
-              >
+
+              <span v-for="categoryId in categoryFilter.categoryIds.slice(0, 2)" :key="categoryId"
+                class="inline-flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-lg">
                 <span>{{ getCategoryById(categoryId)?.icon }}</span>
                 <span>{{ getCategoryById(categoryId)?.name }}</span>
               </span>
-              
-              <span
-                v-if="categoryFilter.categoryIds.length > 2"
-                class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg"
-              >
+
+              <span v-if="categoryFilter.categoryIds.length > 2"
+                class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">
                 +{{ categoryFilter.categoryIds.length - 2 }} more categories
               </span>
-              
-              <span
-                v-if="search"
-                class="inline-flex items-center space-x-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-lg"
-              >
+
+              <span v-if="search"
+                class="inline-flex items-center space-x-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-lg">
                 <span>🔍</span>
                 <span>"{{ search }}"</span>
               </span>
@@ -121,25 +93,20 @@
         <!-- Results Summary -->
         <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div class="text-sm text-gray-600">
-            Showing {{ (currentPage - 1) * perPage + 1 }} to {{ Math.min(currentPage * perPage, totalTransactions) }} of {{ totalTransactions }} transactions
+            Showing {{ (currentPage - 1) * perPage + 1 }} to {{ Math.min(currentPage * perPage, totalTransactions) }} of
+            {{ totalTransactions }} transactions
             <span v-if="hasActiveFilters" class="text-primary-600 font-medium">(filtered)</span>
           </div>
           <div class="flex items-center gap-2">
             <label class="text-sm text-gray-600">Sort by:</label>
-            <select 
-              v-model="sortBy" 
-              @change="onSortChange"
-              class="px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none"
-            >
+            <select v-model="sortBy" @change="onSortChange"
+              class="px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
               <option value="transactionDate">Date</option>
               <option value="amount">Amount</option>
               <option value="description">Description</option>
             </select>
-            <button
-              @click="toggleSortOrder"
-              class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label="Toggle sort order"
-            >
+            <button @click="toggleSortOrder" class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Toggle sort order">
               <ArrowUpDownIcon class="w-4 h-4" />
             </button>
           </div>
@@ -155,11 +122,16 @@
           <table v-else class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Description</th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
-                <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
-                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Date</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Description</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Category</th>
+                <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Amount</th>
+                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
@@ -172,7 +144,8 @@
                   <div class="text-xs text-gray-400 font-medium">{{ tx.paymentMethod }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                  <span
+                    class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
                     <span>{{ getCategoryById(tx.categoryId)?.icon }}</span>
                     <span>{{ tx.categoryName }}</span>
                   </span>
@@ -184,20 +157,13 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
                   <div class="flex items-center justify-center space-x-2">
-                    <button 
-                      @click="openEditModal(tx)"
-                      class="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"
-                      title="Edit transaction"
-                      aria-label="Edit transaction"
-                    >
+                    <button @click="openEditModal(tx)" class="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"
+                      title="Edit transaction" aria-label="Edit transaction">
                       <EditIcon class="w-4 h-4" />
                     </button>
-                    <button 
-                      @click="deleteTransaction(tx.id)"
-                      class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
-                      title="Delete transaction"
-                      aria-label="Delete transaction"
-                    >
+                    <button @click="deleteTransaction(tx.id)"
+                      class="p-1.5 text-gray-400 hover:text-red-500 transition-colors" title="Delete transaction"
+                      aria-label="Delete transaction">
                       <Trash2Icon class="w-4 h-4" />
                     </button>
                   </div>
@@ -208,85 +174,92 @@
         </div>
 
         <!-- Pagination -->
-        <Pagination
-          v-if="totalPages > 1"
-          :current-page="currentPage"
-          :total-pages="totalPages"
-          :total="totalTransactions"
-          :per-page="perPage"
-          @page-change="onPageChange"
-          @per-page-change="onPerPageChange"
-        />
+        <Pagination v-if="totalPages > 1" :current-page="currentPage" :total-pages="totalPages"
+          :total="totalTransactions" :per-page="perPage" @page-change="onPageChange"
+          @per-page-change="onPerPageChange" />
       </div>
 
       <!-- Add Transaction Modal -->
-      <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm overflow-y-auto">
+      <div v-if="showAddModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm overflow-y-auto">
         <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-black text-gray-900">New Transaction</h3>
-            <button @click="showAddModal = false" class="p-2 text-gray-400 hover:text-gray-600" aria-label="Close modal">
+            <button @click="showAddModal = false" class="p-2 text-gray-400 hover:text-gray-600"
+              aria-label="Close modal">
               <XIcon class="w-6 h-6" />
             </button>
           </div>
 
           <form @submit.prevent="handleAddTransaction" class="space-y-4">
             <div class="grid grid-cols-2 gap-3">
-              <button 
-                type="button"
-                @click="newTransaction.type = 'expense'"
-                :class="[
-                  newTransaction.type === 'expense' ? 'bg-red-500 text-white shadow-lg shadow-red-200' : 'bg-gray-50 text-gray-500',
-                  'py-3 rounded-2xl text-sm font-bold transition-all'
-                ]"
-                role="radio"
-                :aria-checked="newTransaction.type === 'expense'"
-              >
+              <button type="button" @click="newTransaction.type = 'expense'" :class="[
+                newTransaction.type === 'expense' ? 'bg-red-500 text-white shadow-lg shadow-red-200' : 'bg-gray-50 text-gray-500',
+                'py-3 rounded-2xl text-sm font-bold transition-all'
+              ]" role="radio" :aria-checked="newTransaction.type === 'expense'">
                 Expense
               </button>
-              <button 
-                type="button"
-                @click="newTransaction.type = 'income'"
-                :class="[
-                  newTransaction.type === 'income' ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-gray-50 text-gray-500',
-                  'py-3 rounded-2xl text-sm font-bold transition-all'
-                ]"
-                role="radio"
-                :aria-checked="newTransaction.type === 'income'"
-              >
+              <button type="button" @click="newTransaction.type = 'income'" :class="[
+                newTransaction.type === 'income' ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-gray-50 text-gray-500',
+                'py-3 rounded-2xl text-sm font-bold transition-all'
+              ]" role="radio" :aria-checked="newTransaction.type === 'income'">
                 Income
               </button>
             </div>
 
             <div>
               <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Description</label>
-              <input v-model="newTransaction.description" type="text" class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" placeholder="What was this for?" required />
+              <input v-model="newTransaction.description" type="text" :class="[
+                'w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none',
+                formErrors.description ? 'border-red-300 bg-red-50' : 'border-gray-200'
+              ]" placeholder="What was this for?" required @input="formErrors.description = ''" />
+              <p v-if="formErrors.description" class="mt-1 text-xs text-red-500">{{ formErrors.description }}</p>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Amount</label>
                 <div class="relative">
-                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input v-model.number="newTransaction.amount" type="number" step="0.01" class="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none" placeholder="0.00" required />
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">{{ currencySymbol }}</span>
+                  <input v-model.number="newTransaction.amount" type="number" step="0.01" :class="[
+                    'w-full pl-12 pr-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none',
+                    formErrors.amount ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                  ]" placeholder="0" required @input="formErrors.amount = ''" />
                 </div>
+                <p v-if="formErrors.amount" class="mt-1 text-xs text-red-500">{{ formErrors.amount }}</p>
               </div>
-              <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Date</label>
-                <input v-model="newTransaction.transactionDate" type="date" class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none" required />
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Date</label>
+                  <input v-model="newTransaction.transactionDate" type="date"
+                    class="w-full px-3 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    required />
+                </div>
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Time</label>
+                  <input v-model="newTransaction.transactionTime" type="time"
+                    class="w-full px-3 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    required />
+                </div>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Category</label>
-                <select v-model="newTransaction.categoryId" class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none bg-white" required>
+                <select v-model="newTransaction.categoryId" :class="[
+                  'w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none bg-white',
+                  formErrors.categoryId ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                ]" required @change="formErrors.categoryId = ''">
                   <option value="">Select Category</option>
                   <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                 </select>
+                <p v-if="formErrors.categoryId" class="mt-1 text-xs text-red-500">{{ formErrors.categoryId }}</p>
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Payment Method</label>
-                <select v-model="newTransaction.paymentMethod" class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none bg-white">
+                <select v-model="newTransaction.paymentMethod"
+                  class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none bg-white">
                   <option value="cash">Cash</option>
                   <option value="bank_transfer">Bank Transfer</option>
                   <option value="credit_card">Credit Card</option>
@@ -297,12 +270,16 @@
 
             <div>
               <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Notes (Optional)</label>
-              <textarea v-model="newTransaction.notes" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none resize-none" placeholder="Any extra details..."></textarea>
+              <textarea v-model="newTransaction.notes" rows="2"
+                class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none resize-none"
+                placeholder="Any extra details..."></textarea>
             </div>
 
             <div class="flex gap-3 mt-8">
-              <button @click="showAddModal = false" type="button" class="flex-1 py-3.5 rounded-2xl border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all">Cancel</button>
-              <button type="submit" :disabled="isSubmitting" class="flex-1 py-3.5 rounded-2xl bg-primary-600 text-white text-sm font-black hover:bg-primary-700 shadow-lg shadow-primary-200 transition-all disabled:opacity-50">
+              <button @click="showAddModal = false" type="button"
+                class="flex-1 py-3.5 rounded-2xl border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all">Cancel</button>
+              <button type="submit" :disabled="isSubmitting"
+                class="flex-1 py-3.5 rounded-2xl bg-primary-600 text-white text-sm font-black hover:bg-primary-700 shadow-lg shadow-primary-200 transition-all disabled:opacity-50">
                 {{ isSubmitting ? 'Recording...' : 'Record Transaction' }}
               </button>
             </div>
@@ -310,13 +287,8 @@
         </div>
       </div>
       <!-- Edit Transaction Modal -->
-      <TransactionEdit
-        v-if="showEditModal && editingTransaction"
-        :transaction="editingTransaction"
-        :categories="categories"
-        @close="closeEditModal"
-        @saved="onTransactionSaved"
-      />
+      <TransactionEdit v-if="showEditModal && editingTransaction" :transaction="editingTransaction"
+        :categories="categories" @close="closeEditModal" @saved="onTransactionSaved" />
     </div>
   </MainLayout>
 </template>
@@ -328,17 +300,18 @@ import DateRangeFilter, { type DateRange } from '@/components/filters/DateRangeF
 import CategoryFilter, { type CategoryFilter as CategoryFilterType } from '@/components/filters/CategoryFilter.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import TransactionEdit from '@/components/forms/TransactionEdit.vue'
-import { 
-  financialService, 
-  Transaction, 
-  Category, 
-  TransactionResponse 
+import {
+  financialService,
+  Transaction,
+  Category,
+  TransactionResponse
 } from '@/services/financialService'
-import { formatCurrency } from '@/utils/currency'
-import { 
-  HistoryIcon, 
-  SearchIcon, 
-  Trash2Icon, 
+import { formatCurrency, currencySymbol } from '@/utils/currency'
+import { useNotificationStore } from '@/stores/notification'
+import {
+  HistoryIcon,
+  SearchIcon,
+  Trash2Icon,
   XIcon,
   ArrowUpDownIcon,
   EditIcon
@@ -349,6 +322,8 @@ const categories = ref<Category[]>([])
 const totalTransactions = ref(0)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
+const notificationStore = useNotificationStore()
+
 const showAddModal = ref(false)
 const showEditModal = ref(false)
 const editingTransaction = ref<Transaction | null>(null)
@@ -370,10 +345,43 @@ const newTransaction = ref({
   description: '',
   amount: 0,
   transactionDate: new Date().toISOString().split('T')[0],
+  transactionTime: new Date().toTimeString().slice(0, 5),
   categoryId: '',
   paymentMethod: 'bank_transfer',
   notes: ''
 })
+
+const formErrors = ref({
+  description: '',
+  amount: '',
+  categoryId: ''
+})
+
+const validateForm = () => {
+  let isValid = true
+  formErrors.value = {
+    description: '',
+    amount: '',
+    categoryId: ''
+  }
+
+  if (!newTransaction.value.description.trim()) {
+    formErrors.value.description = 'Description is required'
+    isValid = false
+  }
+
+  if (newTransaction.value.amount <= 0) {
+    formErrors.value.amount = 'Amount must be greater than 0'
+    isValid = false
+  }
+
+  if (!newTransaction.value.categoryId) {
+    formErrors.value.categoryId = 'Category is required'
+    isValid = false
+  }
+
+  return isValid
+}
 
 const availableCategories = computed(() => {
   return categories.value.filter(c => c.type === newTransaction.value.type)
@@ -394,13 +402,13 @@ const getCategoryById = (id: string): Category | undefined => {
 }
 
 const formatDateRange = (startDate: string, endDate: string): string => {
-  const start = new Date(startDate).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric' 
+  const start = new Date(startDate).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
   })
-  const end = new Date(endDate).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric' 
+  const end = new Date(endDate).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
   })
   return `${start} - ${end}`
 }
@@ -408,10 +416,10 @@ const formatDateRange = (startDate: string, endDate: string): string => {
 const fetchTransactions = async () => {
   try {
     isLoading.value = true
-    
+
     // For now, we'll fetch all and filter client-side since backend may not support all filters yet
     const response = await financialService.getTransactions()
-    
+
     // Handle both old format (array) and new format (object with pagination)
     let allTransactions: Transaction[]
     if (Array.isArray(response)) {
@@ -419,14 +427,14 @@ const fetchTransactions = async () => {
     } else {
       allTransactions = (response as TransactionResponse).transactions
     }
-    
+
     // Apply client-side filtering as fallback
     let filtered = allTransactions
 
     // Search filter
     if (search.value) {
       const searchLower = search.value.toLowerCase()
-      filtered = filtered.filter(tx => 
+      filtered = filtered.filter(tx =>
         tx.description.toLowerCase().includes(searchLower) ||
         tx.categoryName.toLowerCase().includes(searchLower)
       )
@@ -449,7 +457,7 @@ const fetchTransactions = async () => {
 
     // Category filter
     if (categoryFilter.value.categoryIds.length > 0) {
-      filtered = filtered.filter(tx => 
+      filtered = filtered.filter(tx =>
         categoryFilter.value.categoryIds.includes(tx.categoryId)
       )
     }
@@ -460,7 +468,7 @@ const fetchTransactions = async () => {
     // Sort
     filtered.sort((a, b) => {
       let aVal: any, bVal: any
-      
+
       switch (sortBy.value) {
         case 'amount':
           aVal = a.amount
@@ -563,19 +571,30 @@ const openAddModal = () => {
     description: '',
     amount: 0,
     transactionDate: new Date().toISOString().split('T')[0],
+    transactionTime: new Date().toTimeString().slice(0, 5),
     categoryId: '',
     paymentMethod: 'bank_transfer',
     notes: ''
   }
+  formErrors.value = { description: '', amount: '', categoryId: '' }
   showAddModal.value = true
 }
 
 const handleAddTransaction = async () => {
+  if (!validateForm()) return
+
   try {
     isSubmitting.value = true
-    await financialService.createTransaction(newTransaction.value as any)
+    // Combine date and time into a single datetime
+    const { transactionTime, ...rest } = newTransaction.value
+    const combinedDateTime = `${rest.transactionDate}T${transactionTime}:00`
+    await financialService.createTransaction({
+      ...rest,
+      transactionDate: combinedDateTime
+    } as any)
     showAddModal.value = false
     await fetchTransactions()
+    notificationStore.success('Transaction recorded successfully')
   } catch (err) {
     console.error('Failed to create transaction:', err)
   } finally {
@@ -597,13 +616,14 @@ const onTransactionSaved = async () => {
   showEditModal.value = false
   editingTransaction.value = null
   await fetchTransactions()
+  notificationStore.success('Transaction updated successfully')
 }
 
 const deleteTransaction = async (id: string) => {
   if (!confirm('Are you sure you want to delete this transaction?')) {
     return
   }
-  
+
   try {
     await financialService.deleteTransaction(id)
     await fetchTransactions()
@@ -614,10 +634,10 @@ const deleteTransaction = async (id: string) => {
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString(undefined, { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
   })
 }
 

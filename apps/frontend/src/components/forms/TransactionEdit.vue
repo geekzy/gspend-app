@@ -73,13 +73,13 @@
               Amount <span class="text-red-500">*</span>
             </label>
             <div class="relative">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">{{ currencySymbol }}</span>
               <input 
                 v-model.number="editForm.amount" 
                 type="number" 
                 step="0.01" 
                 min="0.01"
-                :class="getFieldClass('amount', 'w-full pl-8 pr-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none', 'border-red-300 bg-red-50')"
+                :class="getFieldClass('amount', 'w-full pl-12 pr-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none', 'border-red-300 bg-red-50')"
                 placeholder="0.00" 
                 required 
                 @blur="handleFieldBlur('amount')"
@@ -89,20 +89,33 @@
             </div>
             <p v-if="hasFieldError('amount')" id="error-amount" class="mt-1 text-xs text-red-500">{{ getFieldError('amount') }}</p>
           </div>
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
-              Date <span class="text-red-500">*</span>
-            </label>
-            <input 
-              v-model="editForm.transactionDate" 
-              type="date" 
-              :class="getFieldClass('transactionDate', 'w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none', 'border-red-300 bg-red-50')"
-              required 
-              @blur="handleFieldBlur('transactionDate')"
-              :aria-invalid="hasFieldError('transactionDate')"
-              :aria-describedby="hasFieldError('transactionDate') ? 'error-date' : undefined"
-            />
-            <p v-if="hasFieldError('transactionDate')" id="error-date" class="mt-1 text-xs text-red-500">{{ getFieldError('transactionDate') }}</p>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
+                Date <span class="text-red-500">*</span>
+              </label>
+              <input 
+                v-model="editForm.transactionDate" 
+                type="date" 
+                :class="getFieldClass('transactionDate', 'w-full px-3 py-3 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-sm', 'border-red-300 bg-red-50')"
+                required 
+                @blur="handleFieldBlur('transactionDate')"
+                :aria-invalid="hasFieldError('transactionDate')"
+                :aria-describedby="hasFieldError('transactionDate') ? 'error-date' : undefined"
+              />
+              <p v-if="hasFieldError('transactionDate')" id="error-date" class="mt-1 text-xs text-red-500">{{ getFieldError('transactionDate') }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
+                Time <span class="text-red-500">*</span>
+              </label>
+              <input 
+                v-model="editForm.transactionTime" 
+                type="time" 
+                class="w-full px-3 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                required 
+              />
+            </div>
           </div>
         </div>
 
@@ -182,6 +195,7 @@ import { financialService, type Transaction, type Category } from '@/services/fi
 import { useFormValidation } from '@/composables/useFormValidation'
 import { FormValidators } from '@/utils/validation'
 import { useNotificationStore } from '@/stores/notification'
+import { currencySymbol } from '@/utils/currency'
 
 interface Props {
   transaction: Transaction
@@ -205,6 +219,9 @@ const editForm = ref({
   description: props.transaction.description,
   amount: props.transaction.amount,
   transactionDate: props.transaction.transactionDate.split('T')[0], // Convert to YYYY-MM-DD format
+  transactionTime: props.transaction.transactionDate.includes('T') 
+    ? props.transaction.transactionDate.split('T')[1]?.slice(0, 5) || '12:00'
+    : '12:00',
   categoryId: props.transaction.categoryId,
   paymentMethod: props.transaction.paymentMethod,
   notes: props.transaction.notes || ''
@@ -263,12 +280,13 @@ const handleSave = async () => {
   try {
     isSubmitting.value = true
     
-    // Prepare the update data
+    // Prepare the update data - combine date and time
+    const combinedDateTime = `${editForm.value.transactionDate}T${editForm.value.transactionTime}:00`
     const updateData = {
       type: editForm.value.type,
       description: editForm.value.description.trim(),
       amount: editForm.value.amount,
-      transactionDate: editForm.value.transactionDate,
+      transactionDate: combinedDateTime,
       categoryId: editForm.value.categoryId,
       paymentMethod: editForm.value.paymentMethod,
       notes: editForm.value.notes.trim()

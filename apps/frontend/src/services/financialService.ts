@@ -283,7 +283,14 @@ export const financialService = {
     async createTransaction(transaction: Partial<Transaction>): Promise<Transaction> {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.TRANSACTION_CREATE, async () => {
-            const response = await financeApi.post('/transactions', transaction)
+            // Convert transactionDate from 'YYYY-MM-DD' to ISO8601 format
+            const payload = {
+                ...transaction,
+                transactionDate: transaction.transactionDate
+                    ? new Date(transaction.transactionDate).toISOString()
+                    : undefined
+            }
+            const response = await financeApi.post('/transactions', payload)
             return response.data
         })
     },
@@ -291,7 +298,14 @@ export const financialService = {
     async updateTransaction(id: string, transaction: Partial<Transaction>): Promise<Transaction> {
         const loadingStore = useLoadingStore()
         return loadingStore.withLoading(loadingStore.LOADING_KEYS.TRANSACTION_UPDATE, async () => {
-            const response = await financeApi.put(`/transactions/${id}`, transaction)
+            // Convert transactionDate from 'YYYY-MM-DD' to ISO8601 format
+            const payload = {
+                ...transaction,
+                transactionDate: transaction.transactionDate
+                    ? new Date(transaction.transactionDate).toISOString()
+                    : undefined
+            }
+            const response = await financeApi.put(`/transactions/${id}`, payload)
             return response.data
         })
     },

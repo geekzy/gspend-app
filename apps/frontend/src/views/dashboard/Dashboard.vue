@@ -27,12 +27,12 @@
             </p>
           </div>
           <div class="mt-4 flex md:mt-0 md:ml-4 gap-3">
-            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
+            <router-link to="/reports" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
               Download Report
-            </button>
-            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all shadow-md active:scale-95">
+            </router-link>
+            <router-link to="/transactions" class="inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all shadow-md active:scale-95">
               Add Transaction
-            </button>
+            </router-link>
           </div>
         </div>
 
@@ -206,9 +206,9 @@
                   </div>
                 </div>
               </div>
-              <button class="w-full mt-6 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all">
+              <router-link to="/categories" class="block w-full mt-6 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all text-center">
                 Manage Categories
-              </button>
+              </router-link>
             </div>
           </div>
         </div>

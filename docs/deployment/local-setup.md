@@ -32,7 +32,7 @@ make demo-start
 
 **Demo credentials:**
 - Email: `demo@gspend.com`
-- Password: `password`
+- Password: `passw0rd!`
 
 ---
 

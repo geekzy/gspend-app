@@ -100,7 +100,7 @@ demo-start:
 	@echo ""
 	@echo "🔐 Demo Login Credentials:"
 	@echo "   Email: demo@gspend.com"
-	@echo "   Password: password"
+	@echo "   Password: passw0rd!"
 	@echo ""
 	@echo "📈 What's included:"
 	@echo "   • 3 months of sample transactions"
@@ -130,7 +130,7 @@ demo-stop:
 demo-restart: demo-stop demo-start
 
 .PHONY: demo-clean
-demo-clean:
+demo-clean: demo-stop
 	@echo "🧹 Cleaning up demo environment and data..."
 	@docker compose -f docker-compose.demo.yml down -v
 	@docker system prune -f

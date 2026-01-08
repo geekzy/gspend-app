@@ -3,6 +3,10 @@ FROM node:20-alpine AS build-stage
 
 WORKDIR /app
 
+# Build args for Vite (needed at build time)
+ARG VITE_CURRENCY=IDR
+ENV VITE_CURRENCY=$VITE_CURRENCY
+
 COPY package*.json ./
 RUN npm install
 

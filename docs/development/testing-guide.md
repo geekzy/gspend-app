@@ -158,7 +158,7 @@ Use demo environment for manual testing:
 
 ```bash
 make demo-start
-# Login: demo@gspend.com / password
+# Login: demo@gspend.com / passw0rd!
 ```
 
 ---

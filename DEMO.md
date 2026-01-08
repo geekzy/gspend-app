@@ -33,7 +33,7 @@ The demo environment includes:
 
 ### 👤 Demo User
 - **Email:** demo@gspend.com
-- **Password:** password
+- **Password:** passw0rd!
 
 ### 💰 Financial Data
 - **3 months** of sample transactions (income and expenses)
@@ -116,7 +116,7 @@ docker-compose -f docker-compose.demo.yml logs -f frontend
 ```bash
 curl -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"demo@gspend.com","password":"password"}'
+  -d '{"email":"demo@gspend.com","password":"passw0rd!"}'
 ```
 
 ### Get dashboard data
