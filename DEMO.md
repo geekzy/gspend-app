@@ -20,11 +20,11 @@ make demo-stop
 
 ### Other Demo Commands
 ```bash
-make demo-restart    # Restart demo environment
-make demo-clean      # Clean demo environment and data
-make demo-logs       # View demo logs
-make demo-status     # Check demo status
-make help           # See all available commands
+make demo-restart     # Restart demo environment
+make demo-clean       # Clean demo environment and data
+make demo-logs        # View demo logs
+make demo-status      # Check demo status
+make help             # See all available commands
 ```
 
 ## Demo Data
@@ -94,8 +94,8 @@ docker-compose -f docker-compose.demo.yml restart
 
 ### Clean Reset
 ```bash
-docker-compose -f docker-compose.demo.yml down -v
-./start-demo.sh
+make demo-clean
+make demo-start
 ```
 
 ### Individual Service Logs
@@ -150,9 +150,8 @@ curl -X GET http://localhost:8082/api/v1/transactions \
 
 ### Reset everything
 ```bash
-docker-compose -f docker-compose.demo.yml down -v
-docker system prune -f
-./start-demo.sh
+make demo-clean
+make demo-start
 ```
 
 ## Architecture
