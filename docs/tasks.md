@@ -25,11 +25,11 @@ This implementation plan completes the gSpend family financial management applic
   - ✅ Auth service with profile management and password validation
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.4, 5.5, 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ]* 1.1 Write property test for financial balance calculations
+- [x]* 1.1 Write property test for financial balance calculations
   - **Property 1: Financial Balance Calculations**
   - **Validates: Requirements 1.1, 1.2, 1.5, 10.2**
 
-- [ ]* 1.2 Write property test for category aggregation accuracy
+- [x]* 1.2 Write property test for category aggregation accuracy
   - **Property 3: Category Aggregation Accuracy**
   - **Validates: Requirements 1.4, 2.1, 4.3**
 
@@ -41,7 +41,7 @@ This implementation plan completes the gSpend family financial management applic
   - **Property 5: Pagination Consistency**
   - **Validates: Requirements 3.3**
 
-- [ ]* 1.5 Write property test for budget tracking calculations
+- [x]* 1.5 Write property test for budget tracking calculations
   - **Property 4: Budget Tracking Calculations**
   - **Validates: Requirements 2.2, 4.4**
 
