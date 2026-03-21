@@ -1,6 +1,6 @@
 module github.com/geekzy/gspend-app/apps/auth-service
 
-go 1.24.0
+go 1.26.1
 
 require (
 	github.com/go-playground/validator/v10 v10.22.1
