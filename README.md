@@ -65,7 +65,7 @@ For a complete preview with realistic dummy data:
 make demo-start
 ```
 
-- **Login**: demo@gspend.com / passw0rd!
+- **Login**: `demo@gspend.com / passw0rd!`
 - **Includes**: 3 months of transactions, budgets, and dashboard analytics
 - **See**: [DEMO.md](DEMO.md) for full details
 
@@ -329,10 +329,10 @@ make help
 
 ### Access Points
 
-- **Demo Dashboard**: http://localhost (demo@gspend.com / passw0rd!)
-- **Development Frontend**: http://localhost
-- **Auth API**: http://localhost/api/v1/auth  
-- **Financial API**: http://localhost/api/v1
+- **Demo Dashboard**: `http://localhost (demo@gspend.com / passw0rd!)`
+- **Development Frontend**: `http://localhost`
+- **Auth API**: `http://localhost/api/v1/auth`  
+- **Financial API**: `http://localhost/api/v1`
 
 ### Documentation
 

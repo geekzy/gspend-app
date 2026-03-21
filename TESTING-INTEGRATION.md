@@ -9,21 +9,25 @@ The integration testing framework provides comprehensive end-to-end testing of t
 ## Quick Start
 
 ### Run Full Integration Tests
+
 ```bash
 make test-integration
 ```
 
 ### Run Quick Integration Tests (Reuse Containers)
+
 ```bash
 make test-integration-quick
 ```
 
 ### Setup Test Environment Only
+
 ```bash
 make test-integration-setup
 ```
 
 ### Teardown Test Environment
+
 ```bash
 make test-integration-teardown
 ```
@@ -31,6 +35,7 @@ make test-integration-teardown
 ## Test Architecture
 
 ### Test Environment Components
+
 - **MongoDB Test Instance** - Isolated database on port 27018
 - **Redis Test Instance** - Isolated cache on port 6380  
 - **Auth Service Test** - Authentication service on port 8083
@@ -40,11 +45,13 @@ make test-integration-teardown
 ### Test Categories
 
 #### 1. Service Health Tests
+
 - Verify all services start successfully
 - Check health endpoints respond correctly
 - Validate service dependencies
 
 #### 2. Authentication Tests
+
 - User registration flow
 - Login/logout functionality
 - JWT token validation
@@ -52,11 +59,13 @@ make test-integration-teardown
 - Password change functionality
 
 #### 3. Financial Service Tests
+
 - Categories endpoint accessibility
 - Dashboard endpoint connectivity
 - Basic API response validation
 
 #### 4. Database Tests
+
 - MongoDB connectivity
 - Seeded data validation
 - Index creation verification
@@ -64,12 +73,15 @@ make test-integration-teardown
 ## Test Data Management
 
 ### Automatic Data Seeding
+
 The test environment automatically seeds:
+
 - **System Categories** - Default expense and income categories
 - **Database Indexes** - Performance optimization indexes
 - **Test Users** - Generated during test execution
 
 ### Data Isolation
+
 - Each test run uses a fresh database
 - Test data is automatically cleaned up
 - No interference with development data
@@ -77,6 +89,7 @@ The test environment automatically seeds:
 ## Test Execution Workflow
 
 ### Full Integration Test (`make test-integration`)
+
 1. **Cleanup** - Remove any existing test containers
 2. **Build** - Build latest service images
 3. **Start Services** - Launch test environment
@@ -86,6 +99,7 @@ The test environment automatically seeds:
 7. **Cleanup** - Remove test containers and volumes
 
 ### Quick Integration Test (`make test-integration-quick`)
+
 1. **Check Existing** - Look for running test containers
 2. **Reuse or Rebuild** - Use existing containers if available
 3. **Run Tests** - Execute test suite against existing environment
@@ -94,6 +108,7 @@ The test environment automatically seeds:
 ## Test Results
 
 ### JSON Report Format
+
 ```json
 {
     "timestamp": "2024-01-15T10:30:00Z",
@@ -112,12 +127,14 @@ The test environment automatically seeds:
 ```
 
 ### Report Location
+
 - **File**: `test-results/integration-test-results.json`
 - **View**: `make test-show-results`
 
 ## Debugging and Troubleshooting
 
 ### View Test Logs
+
 ```bash
 # All services
 make test-integration-logs
@@ -131,6 +148,7 @@ docker-compose -f docker-compose.test.yml logs financial-service-test
 ```
 
 ### Manual Test Environment
+
 ```bash
 # Setup environment and keep it running
 make test-integration-setup
@@ -146,6 +164,7 @@ make test-integration-teardown
 ### Common Issues
 
 #### Services Not Starting
+
 ```bash
 # Check container status
 docker-compose -f docker-compose.test.yml ps
@@ -156,7 +175,9 @@ docker-compose -f docker-compose.test.yml logs auth-service-test
 ```
 
 #### Port Conflicts
+
 The test environment uses these ports:
+
 - **27018** - MongoDB Test
 - **6380** - Redis Test  
 - **8083** - Auth Service Test
@@ -165,6 +186,7 @@ The test environment uses these ports:
 Ensure these ports are available before running tests.
 
 #### Database Connection Issues
+
 ```bash
 # Test MongoDB connectivity
 docker-compose -f docker-compose.test.yml exec mongodb-test mongosh gspend_test --eval "db.runCommand('ping')"
@@ -176,6 +198,7 @@ docker-compose -f docker-compose.test.yml exec mongodb-test mongosh gspend_test 
 ## CI/CD Integration
 
 ### GitHub Actions Example
+
 ```yaml
 name: Integration Tests
 on: [push, pull_request]
@@ -196,6 +219,7 @@ jobs:
 ```
 
 ### Local Development Workflow
+
 ```bash
 # During development
 make test-integration-setup  # Setup once
@@ -210,17 +234,20 @@ make test-integration  # Full test run
 ## Performance Considerations
 
 ### Test Execution Times
+
 - **Full Integration Test**: ~3-5 minutes (includes build time)
 - **Quick Integration Test**: ~30-60 seconds (reuses containers)
 - **Setup Only**: ~2-3 minutes
 - **Teardown Only**: ~10-20 seconds
 
 ### Resource Usage
+
 - **Memory**: ~2GB RAM recommended
 - **Disk**: ~1GB for images and volumes
 - **CPU**: Moderate usage during test execution
 
 ### Optimization Tips
+
 1. Use `test-integration-quick` for rapid iteration
 2. Keep test environment running during development
 3. Use `test-integration-setup` once, then multiple `test-integration-quick`
@@ -229,6 +256,7 @@ make test-integration  # Full test run
 ## Extending Tests
 
 ### Adding New Test Cases
+
 Edit `scripts/integration-test.sh`:
 
 ```bash
@@ -248,7 +276,9 @@ main() {
 ```
 
 ### Custom Test Environment
+
 Create custom docker-compose file:
+
 ```yaml
 # docker-compose.custom-test.yml
 services:
@@ -257,6 +287,7 @@ services:
 ```
 
 Run with custom environment:
+
 ```bash
 docker-compose -f docker-compose.custom-test.yml up -d
 # Run custom tests
@@ -266,18 +297,21 @@ docker-compose -f docker-compose.custom-test.yml down
 ## Best Practices
 
 ### Test Development
+
 1. **Isolation** - Each test should be independent
 2. **Cleanup** - Tests should clean up their own data
 3. **Idempotency** - Tests should produce same results when run multiple times
 4. **Fast Feedback** - Use quick tests for rapid development cycles
 
 ### Environment Management
+
 1. **Fresh Start** - Use full integration tests for CI/CD
 2. **Development Speed** - Use quick tests during development
 3. **Resource Management** - Clean up test environments regularly
 4. **Monitoring** - Check test logs for performance issues
 
 ### Debugging
+
 1. **Incremental Testing** - Test individual components first
 2. **Log Analysis** - Use detailed logging for troubleshooting
 3. **Manual Verification** - Use manual endpoints to verify behavior

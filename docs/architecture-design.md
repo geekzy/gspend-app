@@ -60,12 +60,14 @@ graph TB
 ### Communication Protocols
 
 #### External Communication (HTTP/REST)
+
 - **Frontend → Nginx**: HTTP/REST
 - **Nginx → Auth Service**: HTTP/REST (Port 8081)
 - **Nginx → Financial Service**: HTTP/REST (Port 8082)
 - **Purpose**: Client-facing APIs, RESTful endpoints
 
 #### Inter-Service Communication (gRPC)
+
 - **Auth Service ↔ Financial Service**: gRPC (Ports 9091 ↔ 9092)
 - **Purpose**: High-performance internal service-to-service calls
 - **Use Cases**:
@@ -76,10 +78,12 @@ graph TB
 ### Service Responsibilities
 
 #### Auth Service
+
 **HTTP Port**: 8081 (REST API for external clients)  
 **gRPC Port**: 9091 (Inter-service communication)
 
 **Purpose**: Handle all authentication and user management
+
 - User registration and login (HTTP)
 - JWT token generation and validation (HTTP + gRPC)
 - Token refresh and revocation (HTTP)
@@ -92,10 +96,12 @@ graph TB
   - `CheckUserExists(userId)` - Verify user exists
 
 #### Financial Service
+
 **HTTP Port**: 8082 (REST API for external clients)  
 **gRPC Port**: 9092 (Inter-service communication)
 
 **Purpose**: Handle all financial operations
+
 - Income management (HTTP)
 - Budget planning and tracking (HTTP)
 - Transaction recording and queries (HTTP)
@@ -109,6 +115,7 @@ graph TB
 ### Technology Stack Details
 
 #### Frontend Stack
+
 - **Framework**: Vue.js 3 (Composition API)
 - **State Management**: Pinia
 - **Routing**: Vue Router 4
@@ -121,6 +128,7 @@ graph TB
 - **Icons**: Heroicons or Lucide
 
 #### Backend Stack
+
 - **Language**: Go 1.21+
 - **Web Framework**: Echo v4 (for HTTP/REST)
 - **RPC Framework**: gRPC with Protocol Buffers (for inter-service)
@@ -133,11 +141,13 @@ graph TB
 - **API Documentation**: Swagger/OpenAPI (HTTP), Proto files (gRPC)
 
 #### Database & Caching
+
 - **Primary Database**: MongoDB 7.x
 - **Cache Layer**: Redis 7.x
 - **Connection Pooling**: MongoDB connection pool + Redis client pool
 
 #### DevOps & Infrastructure
+
 - **Containerization**: Docker & Docker Compose
 - **Orchestration**: Kubernetes-ready
 - **CI/CD**: GitHub Actions
@@ -166,6 +176,7 @@ erDiagram
 ### Collection Schemas
 
 #### users
+
 ```javascript
 {
   _id: ObjectId,
@@ -184,6 +195,7 @@ db.users.createIndex({ deletedAt: 1 })
 ```
 
 #### categories
+
 ```javascript
 {
   _id: ObjectId,
@@ -205,6 +217,7 @@ db.categories.createIndex({ userId: 1, sortOrder: 1 })
 ```
 
 #### incomes
+
 ```javascript
 {
   _id: ObjectId,
@@ -223,6 +236,7 @@ db.incomes.createIndex({ userId: 1, frequency: 1 })
 ```
 
 #### budgets
+
 ```javascript
 {
   _id: ObjectId,
@@ -253,6 +267,7 @@ db.budgets.createIndex({ "items.categoryId": 1 })
 ```
 
 #### transactions
+
 ```javascript
 {
   _id: ObjectId,
@@ -304,7 +319,7 @@ db.transactions.createIndex({
 ### Auth Service (Port 8081)
 
 | Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| ------ | -------- | ----------- | ------------- |
 | POST | `/api/v1/auth/register` | Register new user | No |
 | POST | `/api/v1/auth/login` | User login | No |
 | POST | `/api/v1/auth/refresh` | Refresh JWT token | Yes (Refresh) |
@@ -319,7 +334,7 @@ db.transactions.createIndex({
 #### Income Management
 
 | Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| ------ | -------- | ----------- | ------------- |
 | GET | `/api/v1/incomes` | List all incomes | Yes |
 | POST | `/api/v1/incomes` | Create new income | Yes |
 | GET | `/api/v1/incomes/:id` | Get income details | Yes |
